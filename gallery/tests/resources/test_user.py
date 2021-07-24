@@ -1,3 +1,6 @@
+from gallery.exceptions import UserAlreadyExists
+
+
 class TestLogin:
     def test_success_login(self, client, mocker):
         # GIVE
@@ -44,3 +47,81 @@ class TestLogin:
         # Assert
         assert response.status_code == 422
         assert "email" in response.json
+
+
+class TestCreateUser:
+    def test_success_create_user(self, client, mocker):
+        # GIVE
+        mocker.patch(
+            "gallery.resources.user.create_user", return_value=object()
+        )
+        data = {
+            "email": "hand5@gmail.com",
+            "name": "Jonh Doe",
+            "password": "123@abdf",
+        }
+        # Act
+        response = client.post("/api/v1/users", json=data)
+        # Assert
+        assert response.status_code == 201
+
+    def test_fail_shorter_password(self, client):
+        # GIVE
+        data = {
+            "email": "email@gmail.com",
+            "name": "Jonh Doe",
+            "password": "123",
+        }
+        # Act
+        response = client.post("/api/v1/users", json=data)
+        # Assert
+        assert response.status_code == 422
+        assert "password" in response.json
+
+    def test_fail_without_password(self, client):
+        # GIVE
+        data = {
+            "email": "email@gmail.com",
+            "name": "Jonh Doe",
+        }
+        # Act
+        response = client.post("/api/v1/users", json=data)
+        # Assert
+        assert response.status_code == 422
+        assert "password" in response.json
+
+    def test_fail_without_email(self, client):
+        # GIVE
+        data = {"name": "Jonh Doe", "password": "123@abvs"}
+        # Act
+        response = client.post("/api/v1/users", json=data)
+        # Assert
+        assert response.status_code == 422
+        assert "email" in response.json
+
+    def test_fail_without_name(self, client):
+        # GIVE
+        data = {"email": "email@gmail.com", "password": "123@abvs"}
+        # Act
+        response = client.post("/api/v1/users", json=data)
+        # Assert
+        assert response.status_code == 422
+        assert "name" in response.json
+
+    def test_fail_user_already_exists(self, client, mocker):
+        # GIVE
+        mocker.patch(
+            "gallery.resources.user.create_user",
+            side_effect=UserAlreadyExists("vish"),
+        )
+        data = {
+            "email": "hand5@gmail.com",
+            "name": "Jonh Doe",
+            "password": "123@abdf",
+        }
+        # Act
+        response = client.post("/api/v1/users", json=data)
+        # Assert
+        assert response.status_code == 400
+        assert "message" in response.json
+        assert "status_code" in response.json
