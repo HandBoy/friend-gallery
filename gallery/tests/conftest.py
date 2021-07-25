@@ -3,7 +3,7 @@ from bson.objectid import ObjectId
 from flask import Flask
 from flask_jwt_extended import create_access_token
 from gallery import resources
-from gallery.documents import UserModel
+from gallery.documents import GalleryModel, UserModel
 from gallery.ext import auth, configuration, serializer
 from mongoengine import connect, disconnect
 
@@ -41,6 +41,12 @@ def create_user():
         password=UserModel.encrypt_password("ab@123dsf"),
     )
     return user.save()
+
+
+@pytest.fixture(scope="function")
+def create_gallery(create_user):
+    gallery = GalleryModel(name="name", user=str(create_user._id))
+    return gallery.save()
 
 
 @pytest.fixture()

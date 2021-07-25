@@ -5,7 +5,13 @@ from flask_jwt_extended import (
     jwt_required,
 )
 from flask_restful import Resource
-from gallery.domain import create_galery, create_user, find_user, login
+from gallery.domain import (
+    create_galery,
+    create_user,
+    find_user,
+    get_gallery_by_user,
+    login,
+)
 from gallery.exceptions import UserAlreadyExists, UserNotFound
 from gallery.resources.schemas import GalerySchema, LoginSchema, UserSchema
 from marshmallow.exceptions import ValidationError
@@ -44,7 +50,7 @@ class UserResource(Resource):
             return err.to_dict(), err.status_code
 
 
-class GaleryResource(Resource):
+class GalleryResource(Resource):
     @jwt_required()
     def post(self, user_id):
         try:
@@ -58,3 +64,8 @@ class GaleryResource(Resource):
             return err.messages, 422
         except UserNotFound as err:
             return err.to_dict(), err.status_code
+
+    @jwt_required()
+    def get(self, user_id):
+        galery = get_gallery_by_user(user_id)
+        return GalerySchema(many=True).dump(galery), 200

@@ -74,10 +74,18 @@ class PicturesModel(EmbeddedDocument):
     updated_at = DateTimeField(default=datetime.utcnow())
 
 
-class GaleryModel(Document):
+class GalleryModel(Document):
     _id = ObjectIdField(required=False)
     name = StringField(max_length=120, required=True)
     user = ReferenceField(UserModel)
     pictures = EmbeddedDocumentListField(PicturesModel)
     created_at = DateTimeField(default=datetime.utcnow())
     updated_at = DateTimeField(default=datetime.utcnow())
+
+    @staticmethod
+    def find_gallery_by_user(user_id):
+        try:
+            galery = list(GalleryModel.objects(user=user_id))
+            return galery
+        except ValidationError:
+            return None

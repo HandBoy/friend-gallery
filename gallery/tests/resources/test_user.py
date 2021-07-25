@@ -128,7 +128,7 @@ class TestCreateUser:
         assert "status_code" in response.json
 
 
-class TestUserGalery:
+class TestCreateUserGalery:
     def test_success_create_galery(self, client, access_token, create_user):
         # Give
         data = {"name": "John Doe Galery"}
@@ -190,3 +190,51 @@ class TestUserGalery:
         # Assert
         assert response.status_code == 422
         assert "name" in response.json
+
+
+class TestListUserGalery:
+    def test_success_user_galery(
+        self, client, access_token, create_user, create_gallery
+    ):
+        # Give
+        data = {"name": "John Doe Galery"}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.get(
+            f"/api/v1/users/{create_user._id}/gallery",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 200
+        assert len(response.json) == 1
+
+    def test_success_user_without_gallery(
+        self, client, access_token, create_gallery
+    ):
+        # Give
+        data = {"name": "John Doe Galery"}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.get(
+            f"/api/v1/users/{ObjectId()}/gallery",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 200
+        assert len(response.json) == 0
+
+    def test_success_invalid_user(self, client, access_token, create_gallery):
+        # Give
+        data = {"name": "John Doe Galery"}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.get(
+            "/api/v1/users/abc/gallery",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 200
+        assert len(response.json) == 0
