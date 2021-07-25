@@ -1,6 +1,6 @@
 from mongoengine.errors import NotUniqueError
 
-from gallery.documents import GalleryModel, UserModel
+from gallery.documents import GalleryModel, PicturesModel, UserModel
 from gallery.exceptions import GalleryNotFound, UserAlreadyExists, UserNotFound
 
 
@@ -36,7 +36,7 @@ def find_user(user_id: str):
     return user
 
 
-def create_galery(user: UserModel, raw_gallery: dict):
+def create_gallery(user: UserModel, raw_gallery: dict):
     gallery = GalleryModel(**raw_gallery)
     user.save()
     gallery.user = user.to_dbref()
@@ -49,7 +49,7 @@ def get_user_galleries(user_id: str):
     return galleries
 
 
-def get_pictures_by_user_and_gallery(user_id: str, gallery_id: str):
+def get_gallery_by_user_and_id(user_id: str, gallery_id: str):
     gallery = GalleryModel.find_gallery_by_user_and_id(
         user_id=user_id, gallery_id=gallery_id
     )
@@ -57,4 +57,22 @@ def get_pictures_by_user_and_gallery(user_id: str, gallery_id: str):
     if not gallery:
         raise GalleryNotFound(message="Gallery Not Found")
 
+    return gallery
+
+
+def get_pictures_by_user_and_gallery(user_id: str, gallery_id: str):
+    gallery = get_gallery_by_user_and_id(
+        user_id=user_id, gallery_id=gallery_id
+    )
+
     return gallery.pictures
+
+
+def create_picture(user_id: str, gallery_id: str, raw_picture: dict):
+    gallery = get_gallery_by_user_and_id(
+        user_id=user_id, gallery_id=gallery_id
+    )
+
+    picture = PicturesModel(**raw_picture)
+    gallery.pictures.append(picture)
+    gallery.save()

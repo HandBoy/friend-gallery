@@ -6,7 +6,8 @@ from flask_jwt_extended import (
 )
 from flask_restful import Resource
 from gallery.domain import (
-    create_galery,
+    create_gallery,
+    create_picture,
     create_user,
     find_user,
     get_user_galleries,
@@ -63,7 +64,7 @@ class UserGalleriesResource(Resource):
             user = find_user(user_id)
             galery = GalerySchema().load(request.get_json())
 
-            create_galery(user=user, raw_gallery=galery)
+            create_gallery(user=user, raw_gallery=galery)
 
             return {}, 201
         except ValidationError as err:
@@ -83,5 +84,20 @@ class PicturesResource(Resource):
         try:
             pictures = get_pictures_by_user_and_gallery(user_id, gallery_id)
             return PictureSchema(many=True).dump(pictures), 200
+        except GalleryNotFound as err:
+            return err.to_dict(), err.status_code
+
+    @jwt_required()
+    def post(self, user_id, gallery_id):
+        try:
+            picture = PictureSchema().load(request.get_json())
+
+            create_picture(
+                user_id=user_id, gallery_id=gallery_id, raw_picture=picture
+            )
+            return None, 201
+
+        except ValidationError as err:
+            return err.messages, 422
         except GalleryNotFound as err:
             return err.to_dict(), err.status_code

@@ -256,7 +256,6 @@ class TestListPicturesUserGallery:
         self, client, access_token, create_gallery
     ):
         # Give
-        data = {"name": "John Doe Gallery"}
         access_headers = {"Authorization": f"Bearer {access_token}"}
         # Act
         response = client.get(
@@ -265,7 +264,6 @@ class TestListPicturesUserGallery:
                 f"/gallery/{create_gallery._id}/pictures"
             ),
             headers=access_headers,
-            json=data,
         )
         # Assert
         assert response.status_code == 200
@@ -275,7 +273,6 @@ class TestListPicturesUserGallery:
         self, client, access_token, gallery_with_pictures
     ):
         # Give
-        data = {"name": "John Doe Gallery"}
         access_headers = {"Authorization": f"Bearer {access_token}"}
         # Act
         response = client.get(
@@ -284,19 +281,19 @@ class TestListPicturesUserGallery:
                 f"/gallery/{gallery_with_pictures._id}/pictures"
             ),
             headers=access_headers,
-            json=data,
         )
         # Assert
         assert response.status_code == 200
         assert len(response.json) == 2
 
-    def test_fail_no_authorization(self, client, access_token, create_gallery):
+    def test_fail_no_authorization(self, client, create_gallery):
         # Give
-        data = {"name": "John Doe Gallery"}
         # Act
         response = client.get(
-            f"/api/v1/users/{ObjectId()}/gallery/{create_gallery._id}/pictures",
-            json=data,
+            (
+                f"/api/v1/users/{ObjectId()}"
+                f"/gallery/{create_gallery._id}/pictures"
+            ),
         )
         # Assert
         assert response.status_code == 401
@@ -305,7 +302,6 @@ class TestListPicturesUserGallery:
         self, client, access_token, create_gallery
     ):
         # Give
-        data = {"name": "John Doe Gallery"}
         access_headers = {"Authorization": f"Bearer {access_token}"}
         # Act
         response = client.get(
@@ -314,7 +310,6 @@ class TestListPicturesUserGallery:
                 f"/gallery/{create_gallery._id}/pictures"
             ),
             headers=access_headers,
-            json=data,
         )
         # Assert
         assert response.status_code == 404
@@ -324,10 +319,77 @@ class TestListPicturesUserGallery:
         self, client, access_token, create_gallery
     ):
         # Give
-        data = {"name": "John Doe Gallery"}
         access_headers = {"Authorization": f"Bearer {access_token}"}
         # Act
         response = client.get(
+            (
+                f"/api/v1/users/{create_gallery.user._id}"
+                f"/gallery/{ObjectId()}/pictures"
+            ),
+            headers=access_headers,
+        )
+        # Assert
+        assert response.status_code == 404
+        assert "message" in response.json
+
+
+class TestCreatePicturesUserGallery:
+    def test_success_add_new_picture(
+        self, client, access_token, create_gallery
+    ):
+        # Give
+        data = {"name": "123", "description": "eitasdae", "url": "adasdasdas"}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
+            (
+                f"/api/v1/users/{create_gallery.user._id}"
+                f"/gallery/{create_gallery._id}/pictures"
+            ),
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 201
+
+    def test_fail_without_authorization(self, client, create_gallery):
+        # Give
+        data = {"name": "123", "description": "eitasdae", "url": "adasdasdas"}
+        # Act
+        response = client.post(
+            (
+                f"/api/v1/users/{create_gallery.user._id}"
+                f"/gallery/{create_gallery._id}/pictures"
+            ),
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 401
+
+    def test_fail_without_name(self, client, access_token, create_gallery):
+        # Give
+        data = {"description": "eitasdae", "url": "adasdasdas"}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
+            (
+                f"/api/v1/users/{create_gallery.user._id}"
+                f"/gallery/{create_gallery._id}/pictures"
+            ),
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 422
+
+    def test_fail_gallery_doesnt_exist(
+        self, client, access_token, create_gallery
+    ):
+        # Give
+        data = {"name": "123", "description": "eitasdae", "url": "adasdasdas"}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
             (
                 f"/api/v1/users/{create_gallery.user._id}"
                 f"/gallery/{ObjectId()}/pictures"
@@ -337,4 +399,21 @@ class TestListPicturesUserGallery:
         )
         # Assert
         assert response.status_code == 404
-        assert "message" in response.json
+
+    def test_fail_user_doesnt_exist(
+        self, client, access_token, create_gallery
+    ):
+        # Give
+        data = {"name": "123", "description": "eitasdae", "url": "adasdasdas"}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
+            (
+                f"/api/v1/users/{ObjectId()}"
+                f"/gallery/{create_gallery._id}/pictures"
+            ),
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 404
