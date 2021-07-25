@@ -1,4 +1,5 @@
-from gallery.exceptions import UserAlreadyExists
+from bson.objectid import ObjectId
+from gallery.exceptions import UserAlreadyExists, UserNotFound
 
 
 class TestLogin:
@@ -125,3 +126,67 @@ class TestCreateUser:
         assert response.status_code == 400
         assert "message" in response.json
         assert "status_code" in response.json
+
+
+class TestUserGalery:
+    def test_success_create_galery(self, client, access_token, create_user):
+        # Give
+        data = {"name": "John Doe Galery"}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
+            f"/api/v1/users/{create_user._id}/gallery",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 201
+
+    def test_fail_without_authentication(self, client):
+        # Give
+        data = {"name": "Jonh Doe Galery"}
+        # Act
+        response = client.post("/api/v1/users/1/gallery", json=data)
+        # Assert
+        assert response.status_code == 401
+
+    def test_fail_invalid_user_id(self, client, access_token):
+        # Give
+        data = {}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
+            "/api/v1/users/1/gallery",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 404
+
+    def test_fail_user_not_found(self, client, access_token):
+        # Give
+        data = {}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
+            f"/api/v1/users/{ObjectId()}/gallery",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 404
+        assert "message" in response.json
+
+    def test_fail_without_name(self, client, access_token, create_user):
+        # Give
+        data = {}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
+            f"/api/v1/users/{create_user._id}/gallery",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 422
+        assert "name" in response.json

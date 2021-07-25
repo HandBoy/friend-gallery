@@ -1,7 +1,4 @@
-
-class UserAlreadyExists(Exception):
-    status_code = 400
-
+class FriendGalleryException(Exception):
     def __init__(self, message, status_code=None, payload=None):
         Exception.__init__(self)
         self.message = message
@@ -14,3 +11,11 @@ class UserAlreadyExists(Exception):
         data["message"] = self.message
         data["status_code"] = self.status_code
         return data
+
+
+class UserAlreadyExists(FriendGalleryException):
+    status_code = 400
+
+
+class UserNotFound(FriendGalleryException):
+    status_code = 404
