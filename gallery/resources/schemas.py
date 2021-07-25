@@ -19,3 +19,13 @@ class GalerySchema(Schema):
     id = fields.Str(attribute="_id")
     name = fields.Str(required=True)
     created_at = fields.DateTime()
+
+
+class PictureSchema(Schema):
+    id = fields.Str()
+    name = fields.Str(required=True)
+    url = fields.Str(required=True)
+    description = fields.Str()
+    likes = fields.Int(default=0)
+    created_at = fields.DateTime()
+    updated_at = fields.DateTime()

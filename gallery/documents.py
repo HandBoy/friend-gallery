@@ -53,17 +53,13 @@ class UserModel(Document):
 
 class PicturesModel(EmbeddedDocument):
     id = UUIDField(default=str(uuid.uuid4()))
-    slug = StringField(
-        max_length=120,
-        required=True,
-    )
     name = StringField(
         max_length=120,
         required=True,
     )
     description = StringField(
         max_length=120,
-        required=True,
+        required=False,
     )
     url = StringField(
         max_length=120,
@@ -85,7 +81,15 @@ class GalleryModel(Document):
     @staticmethod
     def find_gallery_by_user(user_id):
         try:
-            galery = list(GalleryModel.objects(user=user_id))
-            return galery
+            galleries = list(GalleryModel.objects(user=user_id))
+            return galleries
         except ValidationError:
+            return None
+
+    @staticmethod
+    def find_gallery_by_user_and_id(user_id, gallery_id):
+        try:
+            gallery = GalleryModel.objects(user=user_id, _id=gallery_id).get()
+            return gallery
+        except (DoesNotExist, ValidationError):
             return None

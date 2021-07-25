@@ -3,7 +3,7 @@ from bson.objectid import ObjectId
 from flask import Flask
 from flask_jwt_extended import create_access_token
 from gallery import resources
-from gallery.documents import GalleryModel, UserModel
+from gallery.documents import GalleryModel, PicturesModel, UserModel
 from gallery.ext import auth, configuration, serializer
 from mongoengine import connect, disconnect
 
@@ -45,7 +45,23 @@ def create_user():
 
 @pytest.fixture(scope="function")
 def create_gallery(create_user):
-    gallery = GalleryModel(name="name", user=str(create_user._id))
+    id = ObjectId()
+    gallery = GalleryModel(_id=id, name="name", user=str(create_user._id))
+    return gallery.save()
+
+
+@pytest.fixture(scope="function")
+def gallery_with_pictures(create_user):
+    id = ObjectId()
+    gallery = GalleryModel(
+        _id=id,
+        name="name",
+        user=str(create_user._id),
+        pictures=[
+            PicturesModel(name="pic 01", url="url/1"),
+            PicturesModel(name="pic 02", url="url/2"),
+        ],
+    )
     return gallery.save()
 
 

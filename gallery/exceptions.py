@@ -19,3 +19,7 @@ class UserAlreadyExists(FriendGalleryException):
 
 class UserNotFound(FriendGalleryException):
     status_code = 404
+
+
+class GalleryNotFound(FriendGalleryException):
+    status_code = 404

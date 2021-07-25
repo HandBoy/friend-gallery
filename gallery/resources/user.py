@@ -9,11 +9,17 @@ from gallery.domain import (
     create_galery,
     create_user,
     find_user,
-    get_gallery_by_user,
+    get_user_galleries,
+    get_pictures_by_user_and_gallery,
     login,
 )
-from gallery.exceptions import UserAlreadyExists, UserNotFound
-from gallery.resources.schemas import GalerySchema, LoginSchema, UserSchema
+from gallery.exceptions import GalleryNotFound, UserAlreadyExists, UserNotFound
+from gallery.resources.schemas import (
+    GalerySchema,
+    LoginSchema,
+    PictureSchema,
+    UserSchema,
+)
 from marshmallow.exceptions import ValidationError
 
 
@@ -50,14 +56,14 @@ class UserResource(Resource):
             return err.to_dict(), err.status_code
 
 
-class GalleryResource(Resource):
+class UserGalleriesResource(Resource):
     @jwt_required()
     def post(self, user_id):
         try:
             user = find_user(user_id)
             galery = GalerySchema().load(request.get_json())
 
-            create_galery(user=user, raw_galery=galery)
+            create_galery(user=user, raw_gallery=galery)
 
             return {}, 201
         except ValidationError as err:
@@ -67,5 +73,15 @@ class GalleryResource(Resource):
 
     @jwt_required()
     def get(self, user_id):
-        galery = get_gallery_by_user(user_id)
+        galery = get_user_galleries(user_id)
         return GalerySchema(many=True).dump(galery), 200
+
+
+class PicturesResource(Resource):
+    @jwt_required()
+    def get(self, user_id, gallery_id):
+        try:
+            pictures = get_pictures_by_user_and_gallery(user_id, gallery_id)
+            return PictureSchema(many=True).dump(pictures), 200
+        except GalleryNotFound as err:
+            return err.to_dict(), err.status_code
