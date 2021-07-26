@@ -10,6 +10,11 @@ pwd_context = CryptContext(
 )
 
 
+@JWTManager.user_identity_loader
+def user_identity_lookup(user):
+    return user.id
+
+
 def init_app(app):
     app.config["JWT_SECRET_KEY"] = app.config.SECRET_KEY
     app.config["JWT_EXPIRATION_DELTA"] = timedelta(seconds=1800)

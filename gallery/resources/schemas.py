@@ -27,5 +27,6 @@ class PictureSchema(Schema):
     url = fields.Str(required=True)
     description = fields.Str()
     likes = fields.Int(default=0)
+    approved = fields.Bool(default=False)
     created_at = fields.DateTime()
     updated_at = fields.DateTime()

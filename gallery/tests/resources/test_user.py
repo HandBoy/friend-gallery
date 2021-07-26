@@ -1,5 +1,5 @@
 from bson.objectid import ObjectId
-from gallery.exceptions import UserAlreadyExists, UserNotFound
+from gallery.exceptions import UserAlreadyExists
 
 
 class TestLogin:
@@ -414,6 +414,70 @@ class TestCreatePicturesUserGallery:
             ),
             headers=access_headers,
             json=data,
+        )
+        # Assert
+        assert response.status_code == 404
+
+
+class TestLikePicture:
+    def test_success_like_a_picture(
+        self, client, access_token, gallery_with_pictures
+    ):
+        # Give
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
+            (
+                f"/api/v1/gallery/{gallery_with_pictures._id}"
+                f"/pictures/{gallery_with_pictures.pictures[0].id}/like"
+            ),
+            headers=access_headers,
+        )
+        # Assert
+        assert response.status_code == 200
+
+    def test_fail_wihtout_auth(
+        self, client, access_token, gallery_with_pictures
+    ):
+        # Give
+        # Act
+        response = client.post(
+            (
+                f"/api/v1/gallery/{gallery_with_pictures._id}"
+                f"/pictures/{gallery_with_pictures.pictures[0].id}/like"
+            ),
+        )
+        # Assert
+        assert response.status_code == 401
+
+    def test_success_gallery_doesnt_exists(
+        self, client, access_token, gallery_with_pictures
+    ):
+        # Give
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
+            (
+                f"/api/v1/gallery/{ObjectId()}"
+                f"/pictures/{gallery_with_pictures.pictures[0].id}/like"
+            ),
+            headers=access_headers,
+        )
+        # Assert
+        assert response.status_code == 404
+
+    def test_success_picture_doesnt_exists(
+        self, client, access_token, gallery_with_pictures
+    ):
+        # Give
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
+            (
+                f"/api/v1/gallery/{gallery_with_pictures._id}"
+                f"/pictures/{ObjectId()}/like"
+            ),
+            headers=access_headers,
         )
         # Assert
         assert response.status_code == 404

@@ -8,12 +8,13 @@ from mongoengine import (
     EmbeddedDocument,
     EmbeddedDocumentListField,
     IntField,
+    ListField,
     ObjectIdField,
     ReferenceField,
     StringField,
 )
 from mongoengine.errors import ValidationError
-from mongoengine.fields import UUIDField
+from mongoengine.fields import BooleanField, UUIDField
 
 from gallery.ext.auth import pwd_context
 
@@ -66,6 +67,7 @@ class PicturesModel(EmbeddedDocument):
         required=True,
     )
     likes = IntField(default=0)
+    approved = BooleanField(default=False)
     created_at = DateTimeField(default=datetime.utcnow())
     updated_at = DateTimeField(default=datetime.utcnow())
 
@@ -74,6 +76,7 @@ class GalleryModel(Document):
     _id = ObjectIdField(required=False)
     name = StringField(max_length=120, required=True)
     user = ReferenceField(UserModel)
+    can_approve = ListField(ReferenceField(UserModel))
     pictures = EmbeddedDocumentListField(PicturesModel)
     created_at = DateTimeField(default=datetime.utcnow())
     updated_at = DateTimeField(default=datetime.utcnow())
@@ -93,3 +96,17 @@ class GalleryModel(Document):
             return gallery
         except (DoesNotExist, ValidationError):
             return None
+
+    @staticmethod
+    def like_picture_by_id(gallery_id, picture_id):
+        try:
+            picture = (
+                GalleryModel.objects(_id=gallery_id)
+                .get()
+                .pictures.filter(id=picture_id)
+            )
+            picture.get().likes += 1
+            picture.save()
+            return True
+        except (DoesNotExist, ValidationError):
+            return False

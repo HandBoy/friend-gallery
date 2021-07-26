@@ -12,6 +12,7 @@ from gallery.domain import (
     find_user,
     get_user_galleries,
     get_pictures_by_user_and_gallery,
+    like_picture,
     login,
 )
 from gallery.exceptions import GalleryNotFound, UserAlreadyExists, UserNotFound
@@ -96,6 +97,19 @@ class PicturesResource(Resource):
                 user_id=user_id, gallery_id=gallery_id, raw_picture=picture
             )
             return None, 201
+
+        except ValidationError as err:
+            return err.messages, 422
+        except GalleryNotFound as err:
+            return err.to_dict(), err.status_code
+
+
+class PictureLikeResource(Resource):
+    @jwt_required()
+    def post(self, gallery_id, picture_id):
+        try:
+            like_picture(gallery_id=gallery_id, picture_id=picture_id)
+            return None, 200
 
         except ValidationError as err:
             return err.messages, 422

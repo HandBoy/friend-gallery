@@ -40,7 +40,7 @@ def create_gallery(user: UserModel, raw_gallery: dict):
     gallery = GalleryModel(**raw_gallery)
     user.save()
     gallery.user = user.to_dbref()
-
+    gallery.can_approve.append(user.to_dbref())
     gallery.save()
 
 
@@ -76,3 +76,15 @@ def create_picture(user_id: str, gallery_id: str, raw_picture: dict):
     picture = PicturesModel(**raw_picture)
     gallery.pictures.append(picture)
     gallery.save()
+
+
+def like_picture(gallery_id: str, picture_id: str):
+
+    was_liked = GalleryModel.like_picture_by_id(
+        gallery_id=gallery_id, picture_id=picture_id
+    )
+
+    if not was_liked:
+        raise GalleryNotFound(message="Picture Not Found")
+
+    return was_liked

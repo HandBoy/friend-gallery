@@ -1,3 +1,4 @@
+from uuid import uuid4
 import pytest
 from bson.objectid import ObjectId
 from flask import Flask
@@ -52,15 +53,15 @@ def create_gallery(create_user):
 
 @pytest.fixture(scope="function")
 def gallery_with_pictures(create_user):
+    pic_a = PicturesModel(id=uuid4(), name="01", url="url/1")
+    pic_b = PicturesModel(id=uuid4(), name="02", url="url/2")
     id = ObjectId()
+    
     gallery = GalleryModel(
         _id=id,
         name="name",
         user=str(create_user._id),
-        pictures=[
-            PicturesModel(name="pic 01", url="url/1"),
-            PicturesModel(name="pic 02", url="url/2"),
-        ],
+        pictures=[pic_a, pic_b],
     )
     return gallery.save()
 
