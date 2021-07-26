@@ -3,9 +3,12 @@ from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     jwt_required,
+    get_jwt,
+    get_current_user,
 )
 from flask_restful import Resource
 from gallery.domain import (
+    add_permission_to_approve,
     create_gallery,
     create_picture,
     create_user,
@@ -17,6 +20,7 @@ from gallery.domain import (
 )
 from gallery.exceptions import GalleryNotFound, UserAlreadyExists, UserNotFound
 from gallery.resources.schemas import (
+    EmailSchema,
     GalerySchema,
     LoginSchema,
     PictureSchema,
@@ -30,10 +34,11 @@ class LoginResource(Resource):
         data = request.get_json()
         try:
             data = LoginSchema().load(request.get_json())
-
-            if login(**data):
-                access_token = create_access_token(identity=data["email"])
-                refresh_token = create_refresh_token(identity=data["email"])
+            user = login(**data)
+            if user:
+                info = {"email": user.email, "id": str(user._id)}
+                access_token = create_access_token(info)
+                refresh_token = create_refresh_token(info)
 
                 return {
                     "access_token": access_token,
@@ -75,6 +80,8 @@ class UserGalleriesResource(Resource):
 
     @jwt_required()
     def get(self, user_id):
+        print(get_jwt())
+
         galery = get_user_galleries(user_id)
         return GalerySchema(many=True).dump(galery), 200
 
@@ -115,3 +122,18 @@ class PictureLikeResource(Resource):
             return err.messages, 422
         except GalleryNotFound as err:
             return err.to_dict(), err.status_code
+
+
+class PicturesApproveResource(Resource):
+    @jwt_required()
+    def post(self, gallery_id):
+        try:
+            current_user = get_current_user()
+            schema = EmailSchema().load(request.get_json())
+            add_permission_to_approve(
+                current_user._id, gallery_id, schema["email"]
+            )
+            return None, 200
+
+        except ValidationError as err:
+            return err.messages, 400

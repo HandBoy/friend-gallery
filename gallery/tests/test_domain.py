@@ -17,7 +17,7 @@ def test_success_user_exists(mocker):
         "gallery.domain.UserModel.find_by_email", return_value=UserModel()
     )
     mocker.patch(
-        "gallery.domain.UserModel.check_encrypted_password", return_value=True
+        "gallery.domain.check_encrypted_password", return_value=True
     )
     # Act
     has_user = login("emailTrue@email", "123123")

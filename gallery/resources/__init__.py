@@ -5,6 +5,7 @@ from .user import (
     LoginResource,
     PicturesResource,
     UserResource,
+    PicturesApproveResource,
     PictureLikeResource,
 )
 
@@ -21,6 +22,10 @@ api.add_resource(
 api.add_resource(
     PictureLikeResource,
     "/gallery/<string:gallery_id>/pictures/<string:picture_id>/like",
+)
+api.add_resource(
+    PicturesApproveResource,
+    "/gallery/<string:gallery_id>/approver",
 )
 
 

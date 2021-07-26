@@ -16,8 +16,6 @@ from mongoengine import (
 from mongoengine.errors import ValidationError
 from mongoengine.fields import BooleanField, UUIDField
 
-from gallery.ext.auth import pwd_context
-
 
 class UserModel(Document):
     _id = ObjectIdField(required=False)
@@ -40,13 +38,6 @@ class UserModel(Document):
             return current_user
         except (DoesNotExist, ValidationError):
             return None
-
-    @staticmethod
-    def encrypt_password(password):
-        return pwd_context.encrypt(password)
-
-    def check_encrypted_password(self, password):
-        return pwd_context.verify(password, self.password)
 
     def to_dict(self):
         return {"email": self.email, "username": self.username}
@@ -107,6 +98,14 @@ class GalleryModel(Document):
             )
             picture.get().likes += 1
             picture.save()
+            return True
+        except (DoesNotExist, ValidationError):
+            return False
+
+    def append_approver(self, user_id):
+        try:
+            self.can_approve.append(user_id)
+            self.save()
             return True
         except (DoesNotExist, ValidationError):
             return False

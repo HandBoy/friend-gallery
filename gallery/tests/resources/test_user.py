@@ -1,11 +1,17 @@
 from bson.objectid import ObjectId
+from gallery.documents import UserModel
 from gallery.exceptions import UserAlreadyExists
 
 
 class TestLogin:
     def test_success_login(self, client, mocker):
         # GIVE
-        mocker.patch("gallery.resources.user.login", return_value=True)
+        mocker.patch(
+            "gallery.resources.user.login",
+            return_value=UserModel(
+                email="e@e.com", name="a", password="12345678"
+            ),
+        )
         data = {"email": "hand4@gmail.com", "password": "123dfgdfg"}
         # Act
         response = client.post("/api/v1/login", json=data)
@@ -436,9 +442,7 @@ class TestLikePicture:
         # Assert
         assert response.status_code == 200
 
-    def test_fail_wihtout_auth(
-        self, client, access_token, gallery_with_pictures
-    ):
+    def test_fail_wihtout_auth(self, client, gallery_with_pictures):
         # Give
         # Act
         response = client.post(
@@ -478,6 +482,79 @@ class TestLikePicture:
                 f"/pictures/{ObjectId()}/like"
             ),
             headers=access_headers,
+        )
+        # Assert
+        assert response.status_code == 404
+
+
+class TestAddApproverInGallery:
+    def test_success_user_can_pic_from_approve_your_gallery(
+        self, client, access_token, create_user, create_gallery
+    ):
+        # Give
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        data = {"email": create_user.email}
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{create_gallery._id}/approver",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 200
+
+    def test_fail_without_email(self, client, access_token, create_gallery):
+        # Give
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        data = {}
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{create_gallery._id}/approver",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 400
+
+    def test_fail_invalid_email(self, client, access_token, create_gallery):
+        # Give
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        data = {"email": "isso_na_e_um_email"}
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{create_gallery._id}/approver",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 400
+
+    def test_fail_user_to_approver_not_found(
+        self, client, access_token, create_gallery
+    ):
+        # Give
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        data = {"email": "user_not_found@email.com"}
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{create_gallery._id}/approver",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 404
+
+    def test_fail_gallery_not_found(
+        self, client, access_token, create_gallery
+    ):
+        # Give
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        data = {"email": "user_not_found@email.com"}
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{ObjectId()}/approver",
+            headers=access_headers,
+            json=data,
         )
         # Assert
         assert response.status_code == 404

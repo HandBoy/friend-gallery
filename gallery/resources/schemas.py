@@ -6,6 +6,10 @@ class LoginSchema(Schema):
     password = fields.Str(required=True, validate=validate.Length(min=8))
 
 
+class EmailSchema(Schema):
+    email = fields.Email(required=True)
+
+
 class UserSchema(Schema):
     id = fields.Str(attribute="_id")
     email = fields.Email(required=True)

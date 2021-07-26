@@ -1,9 +1,10 @@
 from uuid import uuid4
+
 import pytest
 from bson.objectid import ObjectId
 from flask import Flask
 from flask_jwt_extended import create_access_token
-from gallery import resources
+from gallery import exceptions, resources
 from gallery.documents import GalleryModel, PicturesModel, UserModel
 from gallery.ext import auth, configuration, serializer
 from mongoengine import connect, disconnect
@@ -26,6 +27,8 @@ def app(mongo):
     serializer.init_app(app)
     resources.init_app(app)
 
+    exceptions.handle_api_exceptions(app)
+
     with app.app_context():
         yield app
 
@@ -39,7 +42,7 @@ def create_user():
         _id=id,
         name="name",
         email=f"{id}@email.com",
-        password=UserModel.encrypt_password("ab@123dsf"),
+        password=auth.encrypt_password("ab@123dsf"),
     )
     return user.save()
 
@@ -56,7 +59,7 @@ def gallery_with_pictures(create_user):
     pic_a = PicturesModel(id=uuid4(), name="01", url="url/1")
     pic_b = PicturesModel(id=uuid4(), name="02", url="url/2")
     id = ObjectId()
-    
+
     gallery = GalleryModel(
         _id=id,
         name="name",
@@ -68,5 +71,5 @@ def gallery_with_pictures(create_user):
 
 @pytest.fixture()
 def access_token(create_user):
-    user = create_user
-    return create_access_token(identity=user.email)
+    info = {"email": create_user.email, "id": str(create_user._id)}
+    return create_access_token(info)

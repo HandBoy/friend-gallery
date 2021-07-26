@@ -1,23 +1,29 @@
+from gallery.ext.auth import encrypt_password, check_encrypted_password
 from mongoengine.errors import NotUniqueError
 
 from gallery.documents import GalleryModel, PicturesModel, UserModel
-from gallery.exceptions import GalleryNotFound, UserAlreadyExists, UserNotFound
+from gallery.exceptions import (
+    GalleryNotFound,
+    GalleryPermission,
+    UserAlreadyExists,
+    UserNotFound,
+)
 
 
 def login(email: str, password: str):
     user = UserModel.find_by_email(email=email)
 
-    if user and user.check_encrypted_password(password):
-        return True
+    if user and check_encrypted_password(user.password, password):
+        return user
 
-    return False
+    return None
 
 
 def create_user(name: str, email: str, password: str):
     user = UserModel(
         name=name,
         email=email,
-        password=UserModel.encrypt_password(password),
+        password=encrypt_password(password),
     )
 
     try:
@@ -88,3 +94,15 @@ def like_picture(gallery_id: str, picture_id: str):
         raise GalleryNotFound(message="Picture Not Found")
 
     return was_liked
+
+
+def add_permission_to_approve(user_id, gallery_id, email):
+    gallery = get_gallery_by_user_and_id(
+        user_id=user_id, gallery_id=gallery_id
+    )
+
+    user = UserModel.find_by_email(email=email)
+    if not user:
+        raise UserNotFound(message="User Not Found")
+
+    gallery.append_approver(user._id)
