@@ -73,3 +73,34 @@ def gallery_with_pictures(create_user):
 def access_token(create_user):
     info = {"email": create_user.email, "id": str(create_user._id)}
     return create_access_token(info)
+
+
+@pytest.fixture()
+def user_full_info():
+    id = ObjectId()
+    user = UserModel(
+        _id=id,
+        name="name",
+        email=f"{id}@email.com",
+        password=auth.encrypt_password("ab@123dsf"),
+    )
+    user = user.save()
+    token = create_access_token({"email": user.email, "id": str(user._id)})
+
+    pic_a = PicturesModel(id=uuid4(), name="01", url="url/1")
+    pic_b = PicturesModel(id=uuid4(), name="02", url="url/2")
+
+    gallery = GalleryModel(
+        _id=ObjectId(),
+        name="name",
+        user=str(user._id),
+        pictures=[pic_a, pic_b],
+        can_approve=[str(user._id)]
+    )
+    gallery = gallery.save()
+
+    return {
+        "user": user,
+        "access_token": token,
+        "gallery": gallery,
+    }

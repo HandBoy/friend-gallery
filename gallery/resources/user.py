@@ -9,6 +9,7 @@ from flask_jwt_extended import (
 from flask_restful import Resource
 from gallery.domain import (
     add_permission_to_approve,
+    approve_picture,
     create_gallery,
     create_picture,
     create_user,
@@ -124,7 +125,7 @@ class PictureLikeResource(Resource):
             return err.to_dict(), err.status_code
 
 
-class PicturesApproveResource(Resource):
+class ApproverResource(Resource):
     @jwt_required()
     def post(self, gallery_id):
         try:
@@ -133,6 +134,18 @@ class PicturesApproveResource(Resource):
             add_permission_to_approve(
                 current_user._id, gallery_id, schema["email"]
             )
+            return None, 200
+
+        except ValidationError as err:
+            return err.messages, 400
+
+
+class ApprovePicturesResource(Resource):
+    @jwt_required()
+    def put(self, gallery_id, picture_id):
+        try:
+            current_user = get_current_user()
+            approve_picture(current_user._id, gallery_id, picture_id)
             return None, 200
 
         except ValidationError as err:

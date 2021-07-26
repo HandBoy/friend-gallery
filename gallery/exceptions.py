@@ -44,3 +44,9 @@ def handle_api_exceptions(app):
         response = jsonify(error.to_dict())
         response.status_code = error.status_code
         return response
+
+    @app.errorhandler(GalleryPermission)
+    def handle_gallery_permission_denied(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response

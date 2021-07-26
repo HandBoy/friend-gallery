@@ -109,3 +109,18 @@ class GalleryModel(Document):
             return True
         except (DoesNotExist, ValidationError):
             return False
+
+    @staticmethod
+    def approve_picture(gallery_id, user_id, picture_id, status=True):
+        can_approve = GalleryModel.objects(
+            _id=gallery_id, can_approve__in=[user_id]
+        )
+
+        if not can_approve:
+            return False
+
+        picture = can_approve.get().pictures.filter(id=picture_id)
+        picture.get().approved = status
+        picture.save()
+
+        return True

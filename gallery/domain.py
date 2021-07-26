@@ -96,7 +96,7 @@ def like_picture(gallery_id: str, picture_id: str):
     return was_liked
 
 
-def add_permission_to_approve(user_id, gallery_id, email):
+def add_permission_to_approve(user_id: str, gallery_id: str, email: str):
     gallery = get_gallery_by_user_and_id(
         user_id=user_id, gallery_id=gallery_id
     )
@@ -106,3 +106,12 @@ def add_permission_to_approve(user_id, gallery_id, email):
         raise UserNotFound(message="User Not Found")
 
     gallery.append_approver(user._id)
+
+
+def approve_picture(user_id: str, gallery_id: str, picture_id: str):
+    if GalleryModel.approve_picture(gallery_id, user_id, picture_id):
+        return True
+
+    raise GalleryPermission(
+        message="You dont have permission for approve this picture"
+    )

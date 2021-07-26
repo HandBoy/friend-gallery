@@ -1,11 +1,12 @@
 from flask import Blueprint
 from flask_restful import Api
 from .user import (
+    ApprovePicturesResource,
     UserGalleriesResource,
     LoginResource,
     PicturesResource,
     UserResource,
-    PicturesApproveResource,
+    ApproverResource,
     PictureLikeResource,
 )
 
@@ -24,8 +25,12 @@ api.add_resource(
     "/gallery/<string:gallery_id>/pictures/<string:picture_id>/like",
 )
 api.add_resource(
-    PicturesApproveResource,
+    ApproverResource,
     "/gallery/<string:gallery_id>/approver",
+)
+api.add_resource(
+    ApprovePicturesResource,
+    "/gallery/<string:gallery_id>/pictures/<string:picture_id>/approve",
 )
 
 
