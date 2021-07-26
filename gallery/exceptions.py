@@ -1,3 +1,6 @@
+from flask.json import jsonify
+
+
 class FriendGalleryException(Exception):
     def __init__(self, message, status_code=None, payload=None):
         Exception.__init__(self)
@@ -23,3 +26,21 @@ class UserNotFound(FriendGalleryException):
 
 class GalleryNotFound(FriendGalleryException):
     status_code = 404
+
+
+class GalleryPermission(FriendGalleryException):
+    status_code = 401
+
+
+def handle_api_exceptions(app):
+    @app.errorhandler(UserNotFound)
+    def handle_user_not_found(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response
+
+    @app.errorhandler(GalleryNotFound)
+    def handle_gallery_not_found(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response
