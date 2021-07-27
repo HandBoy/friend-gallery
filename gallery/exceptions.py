@@ -32,6 +32,14 @@ class GalleryPermission(FriendGalleryException):
     status_code = 401
 
 
+class FileNotAccept(FriendGalleryException):
+    status_code = 400
+
+
+class FileUploadException(FriendGalleryException):
+    status_code = 400
+
+
 def handle_api_exceptions(app):
     @app.errorhandler(UserNotFound)
     def handle_user_not_found(error):
@@ -47,6 +55,12 @@ def handle_api_exceptions(app):
 
     @app.errorhandler(GalleryPermission)
     def handle_gallery_permission_denied(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response
+
+    @app.errorhandler(FileNotAccept)
+    def handle_file_not_accept_denied(error):
         response = jsonify(error.to_dict())
         response.status_code = error.status_code
         return response

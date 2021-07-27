@@ -28,7 +28,7 @@ class GalerySchema(Schema):
 class PictureSchema(Schema):
     id = fields.Str()
     name = fields.Str(required=True)
-    url = fields.Str(required=True)
+    url = fields.URL()
     description = fields.Str()
     likes = fields.Int(default=0)
     approved = fields.Bool(default=False)

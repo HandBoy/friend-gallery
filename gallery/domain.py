@@ -1,13 +1,17 @@
-from gallery.ext.auth import encrypt_password, check_encrypted_password
-from mongoengine.errors import NotUniqueError, DoesNotExist
+from mongoengine.errors import DoesNotExist, NotUniqueError
+from werkzeug.datastructures import FileStorage
+from werkzeug.utils import secure_filename
 
 from gallery.documents import GalleryModel, PicturesModel, UserModel
 from gallery.exceptions import (
+    FileNotAccept,
     GalleryNotFound,
     GalleryPermission,
     UserAlreadyExists,
     UserNotFound,
 )
+from gallery.ext.auth import check_encrypted_password, encrypt_password
+from gallery.ext.s3 import allowed_images_to_upload, upload_file_to_s3
 
 
 def login(email: str, password: str):
@@ -81,14 +85,26 @@ def get_gallery_by_user_and_id(user_id: str, gallery_id: str):
     return gallery
 
 
-def create_picture(user_id: str, gallery_id: str, raw_picture: dict):
+def create_picture(
+    user_id: str, gallery_id: str, raw_picture: dict, file: FileStorage
+):
     gallery = get_gallery_by_user_and_id(
         user_id=user_id, gallery_id=gallery_id
     )
 
+    if not allowed_images_to_upload(file.filename):
+        raise FileNotAccept("File type not accept")
+
+    file.filename = f"{user_id}/{gallery_id}/{secure_filename(file.filename)}"
+    output = upload_file_to_s3(file)
+
+    raw_picture["url"] = str(output)
+
     picture = PicturesModel(**raw_picture)
     gallery.pictures.append(picture)
     gallery.save()
+
+    return None, 201
 
 
 def like_picture(gallery_id: str, picture_id: str):

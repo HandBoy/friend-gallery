@@ -2,9 +2,9 @@ from flask import request
 from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
-    jwt_required,
-    get_jwt,
     get_current_user,
+    get_jwt,
+    jwt_required,
 )
 from flask_restful import Resource
 from gallery.domain import (
@@ -19,7 +19,12 @@ from gallery.domain import (
     like_picture,
     login,
 )
-from gallery.exceptions import GalleryNotFound, UserAlreadyExists, UserNotFound
+from gallery.exceptions import (
+    FileUploadException,
+    GalleryNotFound,
+    UserAlreadyExists,
+    UserNotFound,
+)
 from gallery.resources.schemas import (
     EmailSchema,
     GalerySchema,
@@ -100,12 +105,21 @@ class PicturesResource(Resource):
     @jwt_required()
     def post(self, gallery_id):
         try:
-            picture = PictureSchema().load(request.get_json())
+            if "photo_file" not in request.files:
+                raise FileUploadException("No user_file key in request.files")
+
+            file = request.files["photo_file"]
+
+            if file.filename == "":
+                raise FileUploadException("File without name")
+
             current_user = get_current_user()
+            picture = PictureSchema().load(dict(request.form))
             create_picture(
                 user_id=current_user._id,
                 gallery_id=gallery_id,
                 raw_picture=picture,
+                file=file,
             )
             return None, 201
 
