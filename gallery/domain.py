@@ -1,5 +1,4 @@
 from mongoengine.errors import DoesNotExist, NotUniqueError
-from werkzeug.datastructures import FileStorage
 from werkzeug.utils import secure_filename
 
 from gallery.documents import GalleryModel, PicturesModel, UserModel
@@ -85,22 +84,25 @@ def get_gallery_by_user_and_id(user_id: str, gallery_id: str):
     return gallery
 
 
-def create_picture(
-    user_id: str, gallery_id: str, raw_picture: dict, file: FileStorage
-):
+def create_picture(user_id: str, gallery_id: str, raw_picture: dict):
     gallery = get_gallery_by_user_and_id(
         user_id=user_id, gallery_id=gallery_id
     )
 
-    if not allowed_images_to_upload(file.filename):
+    if not allowed_images_to_upload(raw_picture["photo_file"].filename):
         raise FileNotAccept("File type not accept")
 
-    file.filename = f"{user_id}/{gallery_id}/{secure_filename(file.filename)}"
-    output = upload_file_to_s3(file)
+    raw_picture["photo_file"].filename = (
+        f"{user_id}/{gallery_id}/"
+        f"{secure_filename(raw_picture['photo_file'].filename)}"
+    )
+    output = upload_file_to_s3(raw_picture["photo_file"])
 
-    raw_picture["url"] = str(output)
-
-    picture = PicturesModel(**raw_picture)
+    picture = PicturesModel(
+        name=raw_picture["name"],
+        description=raw_picture["description"],
+        url=str(output),
+    )
     gallery.pictures.append(picture)
     gallery.save()
 

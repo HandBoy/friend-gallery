@@ -20,7 +20,6 @@ from gallery.domain import (
     login,
 )
 from gallery.exceptions import (
-    FileUploadException,
     GalleryNotFound,
     UserAlreadyExists,
     UserNotFound,
@@ -30,6 +29,7 @@ from gallery.resources.schemas import (
     GalerySchema,
     LoginSchema,
     PictureSchema,
+    UploadPictureSchema,
     UserSchema,
 )
 from marshmallow.exceptions import ValidationError
@@ -105,26 +105,21 @@ class PicturesResource(Resource):
     @jwt_required()
     def post(self, gallery_id):
         try:
-            if "photo_file" not in request.files:
-                raise FileUploadException("No user_file key in request.files")
+            data = {**dict(request.files), **dict(request.form)}
 
-            file = request.files["photo_file"]
-
-            if file.filename == "":
-                raise FileUploadException("File without name")
+            picture = UploadPictureSchema().load(data)
 
             current_user = get_current_user()
-            picture = PictureSchema().load(dict(request.form))
+
             create_picture(
                 user_id=current_user._id,
                 gallery_id=gallery_id,
                 raw_picture=picture,
-                file=file,
             )
             return None, 201
 
         except ValidationError as err:
-            return err.messages, 422
+            return err.messages, 400
         except GalleryNotFound as err:
             return err.to_dict(), err.status_code
 

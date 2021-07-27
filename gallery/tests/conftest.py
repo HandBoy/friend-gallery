@@ -1,9 +1,11 @@
+import io
 from uuid import uuid4
 
 import pytest
 from bson.objectid import ObjectId
 from flask import Flask
 from flask_jwt_extended import create_access_token
+from werkzeug.datastructures import FileStorage
 from gallery import exceptions, resources
 from gallery.documents import GalleryModel, PicturesModel, UserModel
 from gallery.ext import auth, configuration, serializer
@@ -76,7 +78,7 @@ def access_token(create_user):
 
 
 @pytest.fixture()
-def user_full_info():
+def user():
     id = ObjectId()
     user = UserModel(
         _id=id,
@@ -95,7 +97,7 @@ def user_full_info():
         name="name",
         user=str(user._id),
         pictures=[pic_a, pic_b],
-        can_approve=[str(user._id)]
+        can_approve=[str(user._id)],
     )
     gallery = gallery.save()
 
@@ -104,3 +106,12 @@ def user_full_info():
         "access_token": token,
         "gallery": gallery,
     }
+
+
+@pytest.fixture()
+def file():
+    return FileStorage(
+        stream=io.BytesIO(b"my file contents"),
+        filename="Input.jpg",
+        content_type="jpg",
+    )

@@ -1,6 +1,6 @@
 from bson.objectid import ObjectId
 from gallery.documents import UserModel
-from gallery.exceptions import UserAlreadyExists
+from gallery.exceptions import FileUploadException, UserAlreadyExists
 
 
 class TestLogin:
@@ -272,14 +272,12 @@ class TestListPicturesUserGallery:
         assert response.status_code == 200
         assert len(response.json) == 0
 
-    def test_success_gallery_with_your_pictures(self, client, user_full_info):
+    def test_success_gallery_with_your_pictures(self, client, user):
         # Give
-        access_headers = {
-            "Authorization": f"Bearer {user_full_info['access_token']}"
-        }
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         # Act
         response = client.get(
-            f"/api/v1/gallery/{user_full_info['gallery']._id}/pictures",
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
             headers=access_headers,
         )
         # Assert
@@ -323,17 +321,20 @@ class TestListPicturesUserGallery:
 
 
 class TestCreatePicturesUserGallery:
-    def test_success_add_new_picture(
-        self, client, access_token, create_gallery
-    ):
+    def test_success_add_new_picture(self, mocker, client, user, file):
         # Give
-        data = {"name": "123", "description": "eitasdae", "url": "adasdasdas"}
-        access_headers = {"Authorization": f"Bearer {access_token}"}
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
+        data = {"name": "123", "description": "213", "photo_file": file}
+        mocker.patch(
+            "gallery.domain.upload_file_to_s3",
+            return_value="http://bucket.s3.amazonaws.com/Input.jpg",
+        )
         # Act
         response = client.post(
-            f"/api/v1/gallery/{create_gallery._id}/pictures",
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
             headers=access_headers,
-            json=data,
+            data=data,
+            content_type="multipart/form-data",
         )
         # Assert
         assert response.status_code == 201
@@ -349,18 +350,18 @@ class TestCreatePicturesUserGallery:
         # Assert
         assert response.status_code == 401
 
-    def test_fail_without_name(self, client, access_token, create_gallery):
+    def test_fail_without_name(self, client, user, file):
         # Give
-        data = {"description": "eitasdae", "url": "adasdasdas"}
-        access_headers = {"Authorization": f"Bearer {access_token}"}
+        data = {"description": "eitasdae", "photo_file": file}
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         # Act
         response = client.post(
-            f"/api/v1/gallery/{create_gallery._id}/pictures",
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
             headers=access_headers,
-            json=data,
+            data=data,
         )
         # Assert
-        assert response.status_code == 422
+        assert response.status_code == 400
 
     def test_fail_gallery_doesnt_exist(
         self, client, access_token, create_gallery
@@ -397,6 +398,68 @@ class TestCreatePicturesUserGallery:
         )
         # Assert
         assert response.status_code == 404
+
+    def test_fail_without_image(self, client, user):
+        # Give
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
+        data = {"name": "123", "description": "213"}
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
+            headers=access_headers,
+            data=data,
+            content_type="multipart/form-data",
+        )
+        # Assert
+        assert response.status_code == 400
+
+    def test_fail_image_with_empty_name(self, client, user, file):
+        # Give
+        file.filename = ""
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
+        data = {"name": "123", "description": "213", "photo_file": file}
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
+            headers=access_headers,
+            data=data,
+            content_type="multipart/form-data",
+        )
+        # Assert
+        assert response.status_code == 400
+
+    def test_fail_file_with_extension_not_allowed(self, client, user, file):
+        # Give
+        file.filename = "Input.exe"
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
+        data = {"name": "123", "description": "213", "photo_file": file}
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
+            headers=access_headers,
+            data=data,
+            content_type="multipart/form-data",
+        )
+        # Assert
+        assert response.status_code == 400
+
+    def test_fail_send_image_to_s3(self, mocker, client, user, file):
+        # Give
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
+        data = {"name": "123", "description": "213", "photo_file": file}
+        mocker.patch(
+            "gallery.domain.upload_file_to_s3",
+            side_effect=FileUploadException("vish"),
+        )
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
+            headers=access_headers,
+            data=data,
+            content_type="multipart/form-data",
+        )
+        # Assert
+        assert response.status_code == 400
 
 
 class TestLikePicture:
@@ -536,45 +599,41 @@ class TestAddApproverInGallery:
 
 class TestApprovePicture:
     def test_success_user_can_pic_from_approve_your_gallery(
-        self, client, user_full_info
+        self, client, user
     ):
         # Give
-        access_headers = {
-            "Authorization": f"Bearer {user_full_info['access_token']}"
-        }
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         # Act
         response = client.put(
             (
-                f"/api/v1/gallery/{user_full_info['gallery']._id}"
-                f"/pictures/{user_full_info['gallery'].pictures[0].id}/approve"
+                f"/api/v1/gallery/{user['gallery']._id}"
+                f"/pictures/{user['gallery'].pictures[0].id}/approve"
             ),
             headers=access_headers,
         )
         # Assert
         assert response.status_code == 200
 
-    def test_fail_without_authorization(self, client, user_full_info):
+    def test_fail_without_authorization(self, client, user):
         # Give
         # Act
         response = client.put(
             (
-                f"/api/v1/gallery/{user_full_info['gallery']._id}"
-                f"/pictures/{user_full_info['gallery'].pictures[0].id}/approve"
+                f"/api/v1/gallery/{user['gallery']._id}"
+                f"/pictures/{user['gallery'].pictures[0].id}/approve"
             ),
         )
         # Assert
         assert response.status_code == 401
 
-    def test_fail_gallery_unknown(self, client, user_full_info):
+    def test_fail_gallery_unknown(self, client, user):
         # Give
-        access_headers = {
-            "Authorization": f"Bearer {user_full_info['access_token']}"
-        }
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         # Act
         response = client.put(
             (
                 f"/api/v1/gallery/{ObjectId()}"
-                f"/pictures/{user_full_info['gallery'].pictures[0].id}/approve"
+                f"/pictures/{user['gallery'].pictures[0].id}/approve"
             ),
             headers=access_headers,
         )
@@ -582,15 +641,15 @@ class TestApprovePicture:
         assert response.status_code == 401
 
     def test_fail_user_dont_have_permission_to_approve(
-        self, client, access_token, user_full_info
+        self, client, access_token, user
     ):
         # Give
         access_headers = {"Authorization": f"Bearer {access_token}"}
         # Act
         response = client.put(
             (
-                f"/api/v1/gallery/{user_full_info['gallery']._id}"
-                f"/pictures/{user_full_info['gallery'].pictures[0].id}/approve"
+                f"/api/v1/gallery/{user['gallery']._id}"
+                f"/pictures/{user['gallery'].pictures[0].id}/approve"
             ),
             headers=access_headers,
         )

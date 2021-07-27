@@ -40,6 +40,10 @@ class FileUploadException(FriendGalleryException):
     status_code = 400
 
 
+class FileValidationException(FriendGalleryException):
+    status_code = 400
+
+
 def handle_api_exceptions(app):
     @app.errorhandler(UserNotFound)
     def handle_user_not_found(error):
@@ -61,6 +65,18 @@ def handle_api_exceptions(app):
 
     @app.errorhandler(FileNotAccept)
     def handle_file_not_accept_denied(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response
+
+    @app.errorhandler(FileUploadException)
+    def handle_file_upload_error(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response
+    
+    @app.errorhandler(FileValidationException)
+    def handle_file_validation_error(error):
         response = jsonify(error.to_dict())
         response.status_code = error.status_code
         return response
