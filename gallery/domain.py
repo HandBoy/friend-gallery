@@ -1,5 +1,5 @@
 from gallery.ext.auth import encrypt_password, check_encrypted_password
-from mongoengine.errors import NotUniqueError
+from mongoengine.errors import NotUniqueError, DoesNotExist
 
 from gallery.documents import GalleryModel, PicturesModel, UserModel
 from gallery.exceptions import (
@@ -43,6 +43,7 @@ def find_user(user_id: str):
 
 
 def create_gallery(user: UserModel, raw_gallery: dict):
+    # TODO Improve that
     gallery = GalleryModel(**raw_gallery)
     user.save()
     gallery.user = user.to_dbref()
@@ -55,6 +56,20 @@ def get_user_galleries(user_id: str):
     return galleries
 
 
+def get_pictures(user_id: str, gallery_id: str):
+    try:
+        pictures = GalleryModel.get_pictures_by_user_and_gallery_id(
+            user_id=user_id, gallery_id=gallery_id
+        )
+
+        if pictures:
+            return pictures
+
+        return GalleryModel.get_pictures_approved(gallery_id=gallery_id)
+    except DoesNotExist:
+        raise GalleryNotFound(message="Gallery Not Found")
+
+
 def get_gallery_by_user_and_id(user_id: str, gallery_id: str):
     gallery = GalleryModel.find_gallery_by_user_and_id(
         user_id=user_id, gallery_id=gallery_id
@@ -64,14 +79,6 @@ def get_gallery_by_user_and_id(user_id: str, gallery_id: str):
         raise GalleryNotFound(message="Gallery Not Found")
 
     return gallery
-
-
-def get_pictures_by_user_and_gallery(user_id: str, gallery_id: str):
-    gallery = get_gallery_by_user_and_id(
-        user_id=user_id, gallery_id=gallery_id
-    )
-
-    return gallery.pictures
 
 
 def create_picture(user_id: str, gallery_id: str, raw_picture: dict):

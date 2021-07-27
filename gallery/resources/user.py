@@ -14,8 +14,8 @@ from gallery.domain import (
     create_picture,
     create_user,
     find_user,
+    get_pictures,
     get_user_galleries,
-    get_pictures_by_user_and_gallery,
     like_picture,
     login,
 )
@@ -89,20 +89,23 @@ class UserGalleriesResource(Resource):
 
 class PicturesResource(Resource):
     @jwt_required()
-    def get(self, user_id, gallery_id):
+    def get(self, gallery_id):
         try:
-            pictures = get_pictures_by_user_and_gallery(user_id, gallery_id)
+            current_user = get_current_user()
+            pictures = get_pictures(current_user._id, gallery_id)
             return PictureSchema(many=True).dump(pictures), 200
         except GalleryNotFound as err:
             return err.to_dict(), err.status_code
 
     @jwt_required()
-    def post(self, user_id, gallery_id):
+    def post(self, gallery_id):
         try:
             picture = PictureSchema().load(request.get_json())
-
+            current_user = get_current_user()
             create_picture(
-                user_id=user_id, gallery_id=gallery_id, raw_picture=picture
+                user_id=current_user._id,
+                gallery_id=gallery_id,
+                raw_picture=picture,
             )
             return None, 201
 

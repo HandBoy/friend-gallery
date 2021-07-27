@@ -89,6 +89,25 @@ class GalleryModel(Document):
             return None
 
     @staticmethod
+    def get_pictures_by_user_and_gallery_id(user_id, gallery_id):
+        gallery = GalleryModel.find_gallery_by_user_and_id(user_id, gallery_id)
+
+        if not gallery:
+            return None
+
+        return gallery.pictures
+
+    @staticmethod
+    def get_pictures_approved(gallery_id):
+        pictures = (
+            GalleryModel.objects(_id=gallery_id)
+            .get()
+            .pictures.filter(approved=True)
+        )
+
+        return pictures
+
+    @staticmethod
     def like_picture_by_id(gallery_id, picture_id):
         try:
             picture = (
@@ -98,14 +117,6 @@ class GalleryModel(Document):
             )
             picture.get().likes += 1
             picture.save()
-            return True
-        except (DoesNotExist, ValidationError):
-            return False
-
-    def append_approver(self, user_id):
-        try:
-            self.can_approve.append(user_id)
-            self.save()
             return True
         except (DoesNotExist, ValidationError):
             return False
@@ -124,3 +135,11 @@ class GalleryModel(Document):
         picture.save()
 
         return True
+
+    def append_approver(self, user_id):
+        try:
+            self.can_approve.append(user_id)
+            self.save()
+            return True
+        except (DoesNotExist, ValidationError):
+            return False

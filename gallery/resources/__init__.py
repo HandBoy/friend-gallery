@@ -18,7 +18,7 @@ api.add_resource(UserResource, "/users")
 api.add_resource(UserGalleriesResource, "/users/<string:user_id>/gallery")
 api.add_resource(
     PicturesResource,
-    "/users/<string:user_id>/gallery/<string:gallery_id>/pictures",
+    "/gallery/<string:gallery_id>/pictures",
 )
 api.add_resource(
     PictureLikeResource,
