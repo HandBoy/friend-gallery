@@ -3,14 +3,13 @@ from werkzeug.utils import secure_filename
 
 from gallery.documents import GalleryModel, PicturesModel, UserModel
 from gallery.exceptions import (
-    FileNotAccept,
     GalleryNotFound,
     GalleryPermission,
     UserAlreadyExists,
     UserNotFound,
 )
 from gallery.ext.auth import check_encrypted_password, encrypt_password
-from gallery.ext.s3 import allowed_images_to_upload, upload_file_to_s3
+from gallery.ext.s3 import upload_file_to_s3
 
 
 def login(email: str, password: str):
@@ -84,19 +83,29 @@ def get_gallery_by_user_and_id(user_id: str, gallery_id: str):
     return gallery
 
 
-def create_picture(user_id: str, gallery_id: str, raw_picture: dict):
-    gallery = get_gallery_by_user_and_id(
-        user_id=user_id, gallery_id=gallery_id
-    )
+def can_permission_to_upload_in_gallery(user_id, gallery_id):
+    # gallery is your?
+    gallery = GalleryModel.find_gallery_by_user_and_id(user_id, gallery_id)
+    if not gallery:
+        # your are friend ?
+        gallery = GalleryModel.you_are_friend(user_id, gallery_id)
+        if not gallery:
+            return False
 
-    if not allowed_images_to_upload(raw_picture["photo_file"].filename):
-        raise FileNotAccept("File type not accept")
+    return True
+
+
+def create_picture(user_id: str, gallery_id: str, raw_picture: dict):
+    if not can_permission_to_upload_in_gallery(user_id, gallery_id):
+        raise GalleryPermission(message="You dont have permission for upload.")
 
     raw_picture["photo_file"].filename = (
         f"{user_id}/{gallery_id}/"
         f"{secure_filename(raw_picture['photo_file'].filename)}"
     )
+
     output = upload_file_to_s3(raw_picture["photo_file"])
+    gallery = GalleryModel.find_gallery_by_id(gallery_id)
 
     picture = PicturesModel(
         name=raw_picture["name"],
@@ -140,3 +149,15 @@ def approve_picture(user_id: str, gallery_id: str, picture_id: str):
     raise GalleryPermission(
         message="You dont have permission for approve this picture"
     )
+
+
+def add_gallery_friend(user_id: str, gallery_id: str, email: str):
+    gallery = get_gallery_by_user_and_id(
+        user_id=user_id, gallery_id=gallery_id
+    )
+
+    user = UserModel.find_by_email(email=email)
+    if not user:
+        raise UserNotFound(message="User Not Found")
+
+    gallery.add_friend_to_upload(user._id)

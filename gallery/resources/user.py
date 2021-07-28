@@ -3,11 +3,11 @@ from flask_jwt_extended import (
     create_access_token,
     create_refresh_token,
     get_current_user,
-    get_jwt,
     jwt_required,
 )
 from flask_restful import Resource
 from gallery.domain import (
+    add_gallery_friend,
     add_permission_to_approve,
     approve_picture,
     create_gallery,
@@ -86,8 +86,6 @@ class UserGalleriesResource(Resource):
 
     @jwt_required()
     def get(self, user_id):
-        print(get_jwt())
-
         galery = get_user_galleries(user_id)
         return GalerySchema(many=True).dump(galery), 200
 
@@ -112,7 +110,7 @@ class PicturesResource(Resource):
             current_user = get_current_user()
 
             create_picture(
-                user_id=current_user._id,
+                user_id=str(current_user._id),
                 gallery_id=gallery_id,
                 raw_picture=picture,
             )
@@ -158,6 +156,23 @@ class ApprovePicturesResource(Resource):
         try:
             current_user = get_current_user()
             approve_picture(current_user._id, gallery_id, picture_id)
+            return None, 200
+
+        except ValidationError as err:
+            return err.messages, 400
+
+
+class FriendGalleryResource(Resource):
+    @jwt_required()
+    def post(self, gallery_id):
+        try:
+            current_user = get_current_user()
+            schema = EmailSchema().load(request.get_json())
+            add_gallery_friend(
+                user_id=current_user._id,
+                gallery_id=gallery_id,
+                email=schema["email"],
+            )
             return None, 200
 
         except ValidationError as err:

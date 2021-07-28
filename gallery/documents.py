@@ -67,7 +67,8 @@ class GalleryModel(Document):
     _id = ObjectIdField(required=False)
     name = StringField(max_length=120, required=True)
     user = ReferenceField(UserModel)
-    can_approve = ListField(ReferenceField(UserModel))
+    can_approve = ListField(ReferenceField(UserModel), default=[])
+    friends = ListField(ReferenceField(UserModel), default=[])
     pictures = EmbeddedDocumentListField(PicturesModel)
     created_at = DateTimeField(default=datetime.utcnow())
     updated_at = DateTimeField(default=datetime.utcnow())
@@ -78,6 +79,14 @@ class GalleryModel(Document):
             galleries = list(GalleryModel.objects(user=user_id))
             return galleries
         except ValidationError:
+            return None
+
+    @staticmethod
+    def find_gallery_by_id(id):
+        try:
+            gallery = GalleryModel.objects(_id=id).get()
+            return gallery
+        except (DoesNotExist, ValidationError):
             return None
 
     @staticmethod
@@ -136,10 +145,17 @@ class GalleryModel(Document):
 
         return True
 
-    def append_approver(self, user_id):
-        try:
-            self.can_approve.append(user_id)
-            self.save()
-            return True
-        except (DoesNotExist, ValidationError):
+    @staticmethod
+    def you_are_friend(user_id, gallery_id):
+        if not GalleryModel.objects(_id=gallery_id, friends__in=[user_id]):
             return False
+
+        return True
+
+    def append_approver(self, user_id):
+        self.can_approve.append(user_id)
+        self.save()
+
+    def add_friend_to_upload(self, user_id):
+        self.friends.append(user_id)
+        self.save()

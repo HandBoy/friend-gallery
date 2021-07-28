@@ -74,7 +74,7 @@ def handle_api_exceptions(app):
         response = jsonify(error.to_dict())
         response.status_code = error.status_code
         return response
-    
+
     @app.errorhandler(FileValidationException)
     def handle_file_validation_error(error):
         response = jsonify(error.to_dict())

@@ -199,15 +199,13 @@ class TestCreateUserGallery:
 
 
 class TestListUserGallery:
-    def test_success_user_gallery(
-        self, client, access_token, create_user, create_gallery
-    ):
+    def test_success_user_gallery(self, client, user):
         # Give
         data = {"name": "John Doe Gallery"}
-        access_headers = {"Authorization": f"Bearer {access_token}"}
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         # Act
         response = client.get(
-            f"/api/v1/users/{create_user._id}/gallery",
+            f"/api/v1/users/{user['user']._id}/gallery",
             headers=access_headers,
             json=data,
         )
@@ -461,6 +459,13 @@ class TestCreatePicturesUserGallery:
         # Assert
         assert response.status_code == 400
 
+    def test_fail_upload_me_not_friend(self):
+        # TODO
+        pass
+
+    def test_success_friend_upload(self): 
+        # TODO
+        pass
 
 class TestLikePicture:
     def test_success_like_a_picture(
