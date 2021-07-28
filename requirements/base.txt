@@ -1,4 +1,4 @@
-boto3=1.18.8
+boto3==1.18.8
 dynaconf==3.1.4
 Flask==2.0.1
 Flask-JWT-Extended==4.2.3
