@@ -20,8 +20,10 @@ def check_encrypted_password(pass_hash, password):
 
 
 def init_app(app):
-    app.config["JWT_SECRET_KEY"] = app.config.SECRET_KEY
-    app.config["JWT_EXPIRATION_DELTA"] = timedelta(seconds=1800)
+    app.config["JWT_SECRET_KEY"] = app.config["SECRET_KEY"]
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(
+        minutes=int(app.config["TOKEN_EXPIRES"])
+    )
     jwt = JWTManager(app)
 
     # Register a callback function that loades a user from your database
