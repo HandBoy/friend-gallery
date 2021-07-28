@@ -1,1 +1,1 @@
-web: gunicorn "gallery.app::create_app()"
+web: gunicorn gunicorn wsgi:app
