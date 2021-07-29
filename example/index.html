@@ -1,0 +1,1461 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.2.2, mkdocs-material-7.2.1">
+    
+    
+      
+        <title>Api Documentation - Friend Gallery</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.1118c9be.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ba0d045b.min.css">
+        
+      
+    
+    
+    
+      
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
+        <style>:root{--md-text-font-family:"Roboto";--md-code-font-family:"Roboto Mono"}</style>
+      
+    
+    
+    
+    
+      
+
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="none" data-md-color-accent="none">
+  
+    
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#full-example" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Friend Gallery" class="md-header__button md-logo" aria-label="Friend Gallery" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Friend Gallery
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Api Documentation
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+      </label>
+      
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Friend Gallery" class="md-nav__button md-logo" aria-label="Friend Gallery" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
+
+    </a>
+    Friend Gallery
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Api Documentation
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Api Documentation
+      </a>
+      
+        
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#login" class="md-nav__link">
+    Login
+  </a>
+  
+    <nav class="md-nav" aria-label="Login">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#login_1" class="md-nav__link">
+    /login
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#users" class="md-nav__link">
+    Users
+  </a>
+  
+    <nav class="md-nav" aria-label="Users">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#users_1" class="md-nav__link">
+    /users
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usersuser_idgalleries" class="md-nav__link">
+    /users/{user_id}/galleries
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#galleries" class="md-nav__link">
+    Galleries
+  </a>
+  
+    <nav class="md-nav" aria-label="Galleries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#galleries_1" class="md-nav__link">
+    /galleries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#galleriesgalleries_idfriend" class="md-nav__link">
+    /galleries/{galleries_id}/friend
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#galleriesgalleries_idapprover" class="md-nav__link">
+    /galleries/{galleries_id}/approver
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pictures" class="md-nav__link">
+    Pictures
+  </a>
+  
+    <nav class="md-nav" aria-label="Pictures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#galleriesgalleries_idpictures" class="md-nav__link">
+    /galleries/{galleries_id}/pictures
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#galleriesgalleries_idpicturespicture_idlike" class="md-nav__link">
+    /galleries/{galleries_id}/pictures/{picture_id}/like
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#galleriesgalleries_idpicturespicture_idapprove" class="md-nav__link">
+    /galleries/{galleries_id}/pictures/{picture_id}/approve
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#erros" class="md-nav__link">
+    Erros
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#login" class="md-nav__link">
+    Login
+  </a>
+  
+    <nav class="md-nav" aria-label="Login">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#login_1" class="md-nav__link">
+    /login
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#users" class="md-nav__link">
+    Users
+  </a>
+  
+    <nav class="md-nav" aria-label="Users">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#users_1" class="md-nav__link">
+    /users
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usersuser_idgalleries" class="md-nav__link">
+    /users/{user_id}/galleries
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#galleries" class="md-nav__link">
+    Galleries
+  </a>
+  
+    <nav class="md-nav" aria-label="Galleries">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#galleries_1" class="md-nav__link">
+    /galleries
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#galleriesgalleries_idfriend" class="md-nav__link">
+    /galleries/{galleries_id}/friend
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#galleriesgalleries_idapprover" class="md-nav__link">
+    /galleries/{galleries_id}/approver
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pictures" class="md-nav__link">
+    Pictures
+  </a>
+  
+    <nav class="md-nav" aria-label="Pictures">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#galleriesgalleries_idpictures" class="md-nav__link">
+    /galleries/{galleries_id}/pictures
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#galleriesgalleries_idpicturespicture_idlike" class="md-nav__link">
+    /galleries/{galleries_id}/pictures/{picture_id}/like
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#galleriesgalleries_idpicturespicture_idapprove" class="md-nav__link">
+    /galleries/{galleries_id}/pictures/{picture_id}/approve
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#erros" class="md-nav__link">
+    Erros
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content" data-md-component="content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="full-example">Full example</h1>
+<h2 id="overview">Overview</h2>
+<p>For resolver the test I developed the endpoints:</p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>/login</td>
+<td>To Authenticate on application.</td>
+</tr>
+<tr>
+<td>/users</td>
+<td>To create users on application.</td>
+</tr>
+<tr>
+<td>/users/{user_id}/galleries</td>
+<td>Your login or password don't match</td>
+</tr>
+<tr>
+<td>/galleries</td>
+<td>Show the user galleries.</td>
+</tr>
+<tr>
+<td>/galleries/{galleries_id}/friend</td>
+<td>Show your galleries.</td>
+</tr>
+<tr>
+<td>/galleries/{galleries_id}/approver</td>
+<td>Add a user for send new photos.</td>
+</tr>
+<tr>
+<td>/galleries/{galleries_id}/pictures</td>
+<td>Add permissions for another users approve new photos.</td>
+</tr>
+<tr>
+<td>/galleries/{galleries_id}/pictures/{picture_id}/like</td>
+<td>Show and save images from a gallery.</td>
+</tr>
+<tr>
+<td>/galleries/{galleries_id}/pictures/{picture_id}/approve</td>
+<td>Approve a photo.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="login">Login</h2>
+<h3 id="login_1">/login</h3>
+<p>Endpoint to validate a email and passord from a user, responding with access token.</p>
+<ul>
+<li>POST</li>
+</ul>
+<p><strong>Payload:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Descripton</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>email</strong></td>
+<td><code>str</code></td>
+<td>yes</td>
+<td>User Email</td>
+</tr>
+<tr>
+<td><strong>password</strong></td>
+<td><code>str</code></td>
+<td>yes</td>
+<td>User Password</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Responses Code:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Descripton</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Body Validation Error</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Your login or password don't match</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<pre><code>curl --request POST \
+--url {{your_host}}/api/v1/login \
+--header 'Content-Type: application/json' \
+--data '{
+    "email": "hand7@gmail.com",
+    "password": "123345345"
+}'
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json"># 200 Success
+{
+  &quot;refresh_token&quot;: &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...&quot;,
+  &quot;access_token&quot;: &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...&quot;
+}
+
+</code></pre>
+<h2 id="users">Users</h2>
+<p>Endpoint to validate a email and passord from a user, responding with access token.</p>
+<h3 id="users_1">/users</h3>
+<ul>
+<li>POST</li>
+</ul>
+<p>Create a new User</p>
+<p><strong>Payload:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valitate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>email</strong></td>
+<td><code>str</code></td>
+<td>yes</td>
+<td>User Email</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>password</strong></td>
+<td><code>str</code></td>
+<td>yes</td>
+<td>User Password</td>
+<td>Minimum length 8.</td>
+</tr>
+<tr>
+<td><strong>name</strong></td>
+<td><code>str</code></td>
+<td>yes</td>
+<td>User Name</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Responses Code:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>201</td>
+<td>Created</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Body Validation Error</td>
+</tr>
+<tr>
+<td>400</td>
+<td>User Already Exists</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<pre><code>curl --request POST \
+--url {{your_host}}/api/v1/users \
+--header 'Content-Type: application/json' \
+--data '{
+    "email": "hand8@gmail.com",
+    "name": "Hand medeiros",
+    "password": "123345345"
+}'
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json"># 201 Success
+None
+
+</code></pre>
+<h3 id="usersuser_idgalleries">/users/{user_id}/galleries</h3>
+<ul>
+<li>Get</li>
+</ul>
+<p>See galleries from a user by your user_id</p>
+<p><strong>Payload:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valitate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Responses Code:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Descripton</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Missing Authorization Header</td>
+</tr>
+<tr>
+<td>404</td>
+<td>User not found</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<pre><code>curl --request GET \
+--url {{your_host}}/api/v1/users/60fc235950cecf9ccf641a42/galleries \
+--header 'Authorization: Bearer {access_token}' \
+--header 'Content-Type: application/json'
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json"># 200 Success
+[
+    {
+        &quot;id&quot;: &quot;60fd983458915aef4be70c06&quot;,
+        &quot;created_at&quot;: &quot;2021-07-25T16:57:42.161000&quot;,
+        &quot;name&quot;: &quot;galery 04&quot;
+    }
+]
+
+</code></pre>
+<h2 id="galleries">Galleries</h2>
+<h3 id="galleries_1">/galleries</h3>
+<ul>
+<li>Get</li>
+</ul>
+<p>See your galleries.</p>
+<p><strong>Payload:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valitate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Responses Code:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Descripton</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Missing Authorization Header</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<pre><code>curl --request GET \
+--url {{your_host}}/api/v1/galleries \
+--header 'Authorization: Bearer {access_token}' \
+--header 'Content-Type: application/json'
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json"># 200 Success
+[
+  {
+    &quot;name&quot;: &quot;galery 04 user 07&quot;,
+    &quot;id&quot;: &quot;6102fc1bd348de0fe55b7fc0&quot;,
+    &quot;created_at&quot;: &quot;2021-07-29T19:05:02.034000&quot;
+  }
+]
+</code></pre>
+<ul>
+<li>POST</li>
+</ul>
+<p>Create a new for you</p>
+<p><strong>Payload:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valitate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>name</strong></td>
+<td><code>str</code></td>
+<td>yes</td>
+<td>Gallery Name</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Responses Code:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>201</td>
+<td>Created</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Body Validation Error</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Missing Authorization Header</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<pre><code>curl --request POST \
+--url {{your_host}}/api/v1/galleries \
+--header 'Authorization: Bearer {access_token}' \
+--header 'Content-Type: application/json' \
+--data '{
+    "name": "galery 04 user 07"
+}'
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json"># 201 Created
+None
+
+</code></pre>
+<h3 id="galleriesgalleries_idfriend">/galleries/{galleries_id}/friend</h3>
+<ul>
+<li>POST</li>
+</ul>
+<p>Add a user to can upload photos to your gallery</p>
+<p><strong>Payload:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valitate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>email</strong></td>
+<td><code>str</code></td>
+<td>yes</td>
+<td>email from an active system user</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Responses Code:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Body Validation Error</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Missing Authorization Header</td>
+</tr>
+<tr>
+<td>404</td>
+<td>User not found</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Gallery not found</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<pre><code>curl --request POST \
+--url {{your_host}}/api/v1/gallery/60fd983458915aef4be70c06/friend \
+--header 'Authorization: Bearer {access_token}' \
+--header 'Content-Type: application/json' \
+--data '{
+    "email": "hand7@gmail.com"
+}'
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json"># 200 Success
+None
+
+</code></pre>
+<h3 id="galleriesgalleries_idapprover">/galleries/{galleries_id}/approver</h3>
+<ul>
+<li>POST</li>
+</ul>
+<p>Add a user to can approve photos to show it to all users.</p>
+<p><strong>Payload:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valitate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>email</strong></td>
+<td><code>str</code></td>
+<td>yes</td>
+<td>email from an active system user</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Responses Code:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Body Validation Error</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Missing Authorization Header</td>
+</tr>
+<tr>
+<td>404</td>
+<td>User not found</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Gallery not found</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<pre><code>curl --request POST \
+--url {{your_host}}/api/v1/gallery/60feeafa614ca53869b8b305/approver \
+--header 'Authorization: Bearer {access_token}' \
+--header 'Content-Type: application/json' \
+--data '{
+    "email": "hanasdd5@gmail.com"
+}'
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json"># 200 Success
+None
+
+</code></pre>
+<h2 id="pictures">Pictures</h2>
+<h3 id="galleriesgalleries_idpictures">/galleries/{galleries_id}/pictures</h3>
+<ul>
+<li>Get </li>
+</ul>
+<p>Get the pictures from a gallery by galery_id.</p>
+<p>You can see get all the pictures if your are gallery admin (have permission to approver). If not, you can see only pictures with <strong>approved</strong> status is <strong>True</strong>.</p>
+<p><strong>Filtros disponíveis:</strong></p>
+<ul>
+<li><code>page</code>: Number of page.</li>
+<li><code>limit</code>: How many pictures you can per pages.</li>
+</ul>
+<p><strong>Payload:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valitate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Responses Code:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Descripton</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Missing Authorization Header</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Gallery not found</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<pre><code>curl --request GET \
+--url '{{your_host}}/api/v1/gallery/60fd983458915aef4be70c06/pictures?page=0&amp;limit=3' \
+--header 'Authorization: Bearer {access_token}' \
+--header 'Content-Type: application/json'
+</code></pre>
+<p><strong>Response:</strong></p>
+<p>User not Admin</p>
+<pre><code class="language-json"># 200 Success
+{
+  &quot;result&quot;: [
+    {
+      &quot;id&quot;: &quot;36e824e5-14c1-4bee-a194-c3a05ca78035&quot;,
+      &quot;description&quot;: &quot;eitasdae&quot;,
+      &quot;updated_at&quot;: &quot;2021-07-25T21:00:02.119000&quot;,
+      &quot;approved&quot;: true,
+      &quot;name&quot;: &quot;123&quot;,
+      &quot;likes&quot;: 2,
+      &quot;url&quot;: &quot;http://friend-gallery.s3.amazonaws.com/files/60fc235950cecf9ccf641a42/60fd983458915aef4be70c06/index1.jpeg&quot;,
+      &quot;created_at&quot;: &quot;2021-07-25T21:00:02.119000&quot;
+    }
+  ],
+  &quot;count&quot;: 11,
+  &quot;next_page&quot;: &quot;/gallery/60fd983458915aef4be70c06/pictures?page=1&amp;limit=3&quot;,
+  &quot;previous_page&quot;: &quot;/gallery/60fd983458915aef4be70c06/pictures?page=0&amp;limit=3&quot;
+}
+
+</code></pre>
+<p>User Admin</p>
+<pre><code class="language-json"># 200 Success
+
+{
+  &quot;result&quot;: [
+    {
+      &quot;name&quot;: &quot;123&quot;,
+      &quot;url&quot;: &quot;http://friend-gallery.s3.amazonaws.com/files/60fc235950cecf9ccf641a42/60fd983458915aef4be70c06/index1.jpeg&quot;,
+      &quot;approved&quot;: true,
+      &quot;id&quot;: &quot;36e824e5-14c1-4bee-a194-c3a05ca78035&quot;,
+      &quot;updated_at&quot;: &quot;2021-07-25T21:00:02.119000&quot;,
+      &quot;created_at&quot;: &quot;2021-07-25T21:00:02.119000&quot;,
+      &quot;likes&quot;: 2,
+      &quot;description&quot;: &quot;eitasdae&quot;
+    },
+    {
+      &quot;name&quot;: &quot;123&quot;,
+      &quot;url&quot;: &quot;http://friend-gallery.s3.amazonaws.com/files/60fc235950cecf9ccf641a42/60fd983458915aef4be70c06/index2.jpeg&quot;,
+      &quot;approved&quot;: false,
+      &quot;id&quot;: &quot;49020d0f-9c88-4c46-bac5-0ae9c39c2f95&quot;,
+      &quot;updated_at&quot;: &quot;2021-07-25T21:00:26.187000&quot;,
+      &quot;created_at&quot;: &quot;2021-07-25T21:00:26.187000&quot;,
+      &quot;likes&quot;: 0,
+      &quot;description&quot;: &quot;eitasdae&quot;
+    },
+    {
+      &quot;name&quot;: &quot;123&quot;,
+      &quot;url&quot;: &quot;http://friend-gallery.s3.amazonaws.com/files/60fc235950cecf9ccf641a42/60fd983458915aef4be70c06/index3.jpeg&quot;,
+      &quot;approved&quot;: false,
+      &quot;id&quot;: &quot;615109d9-293b-42b4-820b-0bc23fc91bac&quot;,
+      &quot;updated_at&quot;: &quot;2021-07-25T21:55:33.083000&quot;,
+      &quot;created_at&quot;: &quot;2021-07-25T21:55:33.083000&quot;,
+      &quot;likes&quot;: 0,
+      &quot;description&quot;: &quot;eitasdae&quot;
+    }
+  ],
+  &quot;next_page&quot;: &quot;/gallery/60fd983458915aef4be70c06/pictures?page=1&amp;limit=3&quot;,
+  &quot;previous_page&quot;: &quot;/gallery/60fd983458915aef4be70c06/pictures?page=0&amp;limit=3&quot;,
+  &quot;count&quot;: 11
+}
+</code></pre>
+<ul>
+<li>POST</li>
+</ul>
+<p>Create a new picture in the gallery.</p>
+<p><strong>Payload:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valitate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>photo_file</strong></td>
+<td><code>File</code></td>
+<td>yes</td>
+<td>Photo File</td>
+<td>Accept only extensions: png, jpg, jpeg and gif</td>
+</tr>
+<tr>
+<td><strong>name</strong></td>
+<td><code>str</code></td>
+<td>yes</td>
+<td>Photo Name</td>
+<td></td>
+</tr>
+<tr>
+<td><strong>description</strong></td>
+<td><code>str</code></td>
+<td>no</td>
+<td>Photo description</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Responses Code:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>201</td>
+<td>Created</td>
+</tr>
+<tr>
+<td>400</td>
+<td>Body Validation Error</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Missing Authorization Header</td>
+</tr>
+<tr>
+<td></td>
+<td>You dont have permission to upload</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Gallery not found</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Example</strong></p>
+<pre><code>curl --request POST \
+--url {{your_host}}/api/v1/gallery/60fd983458915aef4be70c06/pictures \
+--header 'Authorization: Bearer {acces_token}' \
+--header 'Content-Type: multipart/form-data; boundary=---011000010111000001101001' \
+--form photo_file=@/home/dell/Pictures/index.jpeg \
+--form 'name="123"' \
+--form 'description="asdasda"'
+</code></pre>
+<p><strong>Response:</strong></p>
+<pre><code class="language-json"># 201 Created
+None
+
+</code></pre>
+<h3 id="galleriesgalleries_idpicturespicture_idlike">/galleries/{galleries_id}/pictures/{picture_id}/like</h3>
+<ul>
+<li>Post </li>
+</ul>
+<p>Like a picture.</p>
+<p><strong>Payload:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valitate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Responses Code:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Descripton</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Missing Authorization Header</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Gallery not found</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Picture not found</td>
+</tr>
+</tbody>
+</table>
+<h3 id="galleriesgalleries_idpicturespicture_idapprove">/galleries/{galleries_id}/pictures/{picture_id}/approve</h3>
+<ul>
+<li>Put </li>
+</ul>
+<p>Approve a picture to show it to all users.</p>
+<p><strong>Payload:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Description</th>
+<th>Valitate</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Responses Code:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Code</th>
+<th>Descripton</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>Success</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Missing Authorization Header</td>
+</tr>
+<tr>
+<td>401</td>
+<td>Don't have permission for approve this picture</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Gallery not found</td>
+</tr>
+<tr>
+<td>404</td>
+<td>Picture not found</td>
+</tr>
+</tbody>
+</table>
+<h2 id="erros">Erros</h2>
+<pre><code class="language-json"># 4xx Error Generics
+{
+  &quot;message&quot;: &quot;User Already Exists&quot;,
+  &quot;status_code&quot;: 400
+}
+
+# 400 Validation Error
+{
+  &quot;field&quot;: [
+    &quot;Messages&quot;
+  ]
+}
+
+# 401 Unauthorized
+{
+  &quot;msg&quot;: &quot;Token has expired&quot;
+}
+</code></pre>
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+        
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <nav class="md-footer__inner md-grid" aria-label="Footer">
+      
+        
+        <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Getting Started" rel="prev">
+          <div class="md-footer__button md-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
+          </div>
+          <div class="md-footer__title">
+            <div class="md-ellipsis">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              Getting Started
+            </div>
+          </div>
+        </a>
+      
+      
+    </nav>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+        Made with
+        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+          Material for MkDocs
+        </a>
+        
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    <script id="__config" type="application/json">{"base": "..", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.53c85856.min.js", "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.716f8af4.min.js"></script>
+      
+    
+  </body>
+</html>
