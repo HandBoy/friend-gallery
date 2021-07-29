@@ -21,16 +21,21 @@ from gallery.domain import (
 )
 from gallery.exceptions import (
     GalleryNotFound,
+    LoginUnauthorized,
     UserAlreadyExists,
     UserNotFound,
 )
-from gallery.resources.schemas import (
-    EmailSchema,
-    GalerySchema,
-    LoginSchema,
-    PictureSchema,
-    UploadPictureSchema,
-    UserSchema,
+from gallery.resources.serializers.inbound import (
+    EmailRequestSchema,
+    GalleryRequestSchema,
+    LoginRequestSchema,
+    PictureRequestSchema,
+    UserRequestSchema,
+)
+from gallery.resources.serializers.outbound import (
+    GalleryResponseSchema,
+    LoginResponseSchema,
+    PictureResponseSchema,
 )
 from marshmallow.exceptions import ValidationError
 
@@ -39,30 +44,31 @@ class LoginResource(Resource):
     def post(self):
         data = request.get_json()
         try:
-            data = LoginSchema().load(request.get_json())
+            data = LoginRequestSchema().load(request.get_json())
             user = login(**data)
             if user:
                 info = {"email": user.email, "id": str(user._id)}
-                access_token = create_access_token(info)
-                refresh_token = create_refresh_token(info)
+                data = LoginResponseSchema().dump(
+                    {
+                        "access_token": create_access_token(info),
+                        "refresh_token": create_refresh_token(info),
+                    }
+                )
 
-                return {
-                    "access_token": access_token,
-                    "refresh_token": refresh_token,
-                }, 200
+                return data, 200
 
         except ValidationError as err:
             return err.messages, 422
 
-        return {"error": True, "message": "Wrong credentials"}, 401
+        raise LoginUnauthorized("Your login or password dont match")
 
 
 class UserResource(Resource):
     def post(self):
         try:
-            data = UserSchema().load(request.get_json())
+            data = UserRequestSchema().load(request.get_json())
             if create_user(**data):
-                return {"message": "User added sucessfully"}, 201
+                return None, 201
         except ValidationError as err:
             return err.messages, 422
         except UserAlreadyExists as err:
@@ -74,11 +80,11 @@ class UserGalleriesResource(Resource):
     def post(self, user_id):
         try:
             user = find_user(user_id)
-            galery = GalerySchema().load(request.get_json())
+            galery = GalleryRequestSchema().load(request.get_json())
 
             create_gallery(user=user, raw_gallery=galery)
 
-            return {}, 201
+            return None, 201
         except ValidationError as err:
             return err.messages, 422
         except UserNotFound as err:
@@ -87,7 +93,7 @@ class UserGalleriesResource(Resource):
     @jwt_required()
     def get(self, user_id):
         galery = get_user_galleries(user_id)
-        return GalerySchema(many=True).dump(galery), 200
+        return GalleryResponseSchema(many=True).dump(galery), 200
 
 
 class PicturesResource(Resource):
@@ -96,7 +102,7 @@ class PicturesResource(Resource):
         try:
             current_user = get_current_user()
             pictures = get_pictures(current_user._id, gallery_id)
-            return PictureSchema(many=True).dump(pictures), 200
+            return PictureResponseSchema(many=True).dump(pictures), 200
         except GalleryNotFound as err:
             return err.to_dict(), err.status_code
 
@@ -105,7 +111,7 @@ class PicturesResource(Resource):
         try:
             data = {**dict(request.files), **dict(request.form)}
 
-            picture = UploadPictureSchema().load(data)
+            picture = PictureRequestSchema().load(data)
 
             current_user = get_current_user()
 
@@ -140,7 +146,7 @@ class ApproverResource(Resource):
     def post(self, gallery_id):
         try:
             current_user = get_current_user()
-            schema = EmailSchema().load(request.get_json())
+            schema = EmailRequestSchema().load(request.get_json())
             add_permission_to_approve(
                 current_user._id, gallery_id, schema["email"]
             )
@@ -167,7 +173,7 @@ class FriendGalleryResource(Resource):
     def post(self, gallery_id):
         try:
             current_user = get_current_user()
-            schema = EmailSchema().load(request.get_json())
+            schema = EmailRequestSchema().load(request.get_json())
             add_gallery_friend(
                 user_id=current_user._id,
                 gallery_id=gallery_id,

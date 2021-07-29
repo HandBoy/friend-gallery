@@ -20,6 +20,10 @@ class UserAlreadyExists(FriendGalleryException):
     status_code = 400
 
 
+class LoginUnauthorized(FriendGalleryException):
+    status_code = 401
+
+
 class UserNotFound(FriendGalleryException):
     status_code = 404
 
@@ -47,6 +51,12 @@ class FileValidationException(FriendGalleryException):
 def handle_api_exceptions(app):
     @app.errorhandler(UserNotFound)
     def handle_user_not_found(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response
+
+    @app.errorhandler(LoginUnauthorized)
+    def handle_login_Unauthorized(error):
         response = jsonify(error.to_dict())
         response.status_code = error.status_code
         return response

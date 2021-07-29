@@ -32,6 +32,7 @@ class TestingConfig(BaseConfig):
     ENV = "test"
     TESTING = True
     LOG_LEVEL = "DEBUG"
+    SECRET_KEY = environ.get("SECRET_KEY", "other-secret-key")
 
 
 config_by_name = dict(

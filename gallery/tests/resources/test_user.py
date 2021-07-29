@@ -28,7 +28,7 @@ class TestLogin:
         response = client.post("/api/v1/login", json=data)
         # Assert
         assert response.status_code == 401
-        assert "error" in response.json
+        assert "status_code" in response.json
         assert "message" in response.json
 
     def test_fail_login_without_body(self, client):
@@ -463,9 +463,10 @@ class TestCreatePicturesUserGallery:
         # TODO
         pass
 
-    def test_success_friend_upload(self): 
+    def test_success_friend_upload(self):
         # TODO
         pass
+
 
 class TestLikePicture:
     def test_success_like_a_picture(

@@ -1,4 +1,5 @@
 import io
+from os import environ
 from uuid import uuid4
 
 import pytest
@@ -7,12 +8,19 @@ from flask import Flask
 from flask_jwt_extended import create_access_token
 from werkzeug.datastructures import FileStorage
 from gallery import exceptions, resources
+from gallery.config import config_by_name
 from gallery.documents import GalleryModel, PicturesModel, UserModel
-from gallery.ext import auth, configuration, serializer
+from gallery.ext import auth, serializer
 from mongoengine import connect, disconnect
 
 
-@pytest.fixture(scope="session")
+@pytest.fixture()
+def mock_env(monkeypatch):
+    monkeypatch.setenv("SECRET_KEY", "other-secret-key")
+    monkeypatch.setenv("FLASK_ENV", "testing")
+
+
+@pytest.fixture()
 def mongo():
     db = connect("mongoenginetest", host="mongomock://localhost")
     yield db
@@ -21,10 +29,13 @@ def mongo():
     return
 
 
-@pytest.fixture(scope="session")
-def app(mongo):
+@pytest.fixture()
+def app(mongo, mock_env):
     app = Flask(__name__)
-    configuration.init_app(app, FORCE_ENV_FOR_DYNACONF="testing")
+    # load object-based default configuration
+    env = environ.get("FLASK_ENV")
+    app.config.from_object(config_by_name[env])
+
     auth.init_app(app)
     serializer.init_app(app)
     resources.init_app(app)
@@ -37,7 +48,7 @@ def app(mongo):
     disconnect()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def create_user():
     id = ObjectId()
     user = UserModel(
@@ -49,14 +60,14 @@ def create_user():
     return user.save()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def create_gallery(create_user):
     id = ObjectId()
     gallery = GalleryModel(_id=id, name="name", user=str(create_user._id))
     return gallery.save()
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture()
 def gallery_with_pictures(create_user):
     pic_a = PicturesModel(id=uuid4(), name="01", url="url/1")
     pic_b = PicturesModel(id=uuid4(), name="02", url="url/2")
