@@ -7,14 +7,16 @@ from flask_jwt_extended import (
 )
 from flask_restful import Resource
 from gallery.domain import (
+    Paginator,
     add_gallery_friend,
     add_permission_to_approve,
     approve_picture,
+    count_pictures,
     create_gallery,
     create_picture,
     create_user,
     find_user,
-    get_pictures,
+    get_paginate_pictures,
     get_user_galleries,
     like_picture,
     login,
@@ -35,7 +37,7 @@ from gallery.resources.serializers.inbound import (
 from gallery.resources.serializers.outbound import (
     GalleryResponseSchema,
     LoginResponseSchema,
-    PictureResponseSchema,
+    PicturePagResponseSchema,
 )
 from marshmallow.exceptions import ValidationError
 
@@ -100,11 +102,35 @@ class PicturesResource(Resource):
     @jwt_required()
     def get(self, gallery_id):
         try:
+            import ipdb
+
+            ipdb.set_trace()
+            paginator = Paginator(
+                page=request.args.get("page", 0),
+                limit=request.args.get("limit", 5),
+                url=f"/gallery/{gallery_id}/pictures",
+            )
+
             current_user = get_current_user()
-            pictures = get_pictures(current_user._id, gallery_id)
-            return PictureResponseSchema(many=True).dump(pictures), 200
+
+            pictures = get_paginate_pictures(
+                current_user._id, gallery_id, paginator.page, paginator.limit
+            )
+            count = count_pictures(gallery_id)
+
+            data = {
+                "previous_page": paginator.previous_page,
+                "next_page": paginator.next_page,
+                "count": count,
+                "result": pictures,
+            }
+            pag = PicturePagResponseSchema().dump(data)
+
+            return pag, 200
         except GalleryNotFound as err:
             return err.to_dict(), err.status_code
+        except ValidationError as err:
+            return err.messages, 400
 
     @jwt_required()
     def post(self, gallery_id):

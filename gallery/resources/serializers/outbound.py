@@ -21,3 +21,10 @@ class PictureResponseSchema(Schema):
     approved = fields.Bool(dump_default=False)
     created_at = fields.DateTime()
     updated_at = fields.DateTime()
+
+
+class PicturePagResponseSchema(Schema):
+    count = fields.Int()
+    next_page = fields.Str()
+    previous_page = fields.Str()
+    result = fields.Nested(PictureResponseSchema, many=True)

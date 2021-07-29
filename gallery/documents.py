@@ -107,14 +107,25 @@ class GalleryModel(Document):
         return gallery.pictures
 
     @staticmethod
-    def get_pictures_approved(gallery_id):
-        pictures = (
+    def get_pictures(gallery_id, page=0, limit=5):
+        first = page * limit
+
+        paginated_pics = (
             GalleryModel.objects(_id=gallery_id)
+            .fields(slice__pictures=[first, limit])
             .get()
-            .pictures.filter(approved=True)
+            .pictures
         )
 
-        return pictures
+        return paginated_pics
+
+    @staticmethod
+    def get_pictures_approved(gallery_id, page=0, limit=10):
+        paginated_pics = GalleryModel.get_pictures(
+            gallery_id, page=0, limit=5
+        ).filter(approved=True)
+
+        return paginated_pics
 
     @staticmethod
     def like_picture_by_id(gallery_id, picture_id):
@@ -146,8 +157,17 @@ class GalleryModel(Document):
         return True
 
     @staticmethod
-    def you_are_friend(user_id, gallery_id):
+    def are_you_friend(user_id, gallery_id):
         if not GalleryModel.objects(_id=gallery_id, friends__in=[user_id]):
+            return False
+
+        return True
+
+    @staticmethod
+    def are_you_owner(gallery_id, user_id):
+        owner = GalleryModel.find_gallery_by_user_and_id(user_id, gallery_id)
+
+        if not owner:
             return False
 
         return True
