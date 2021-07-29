@@ -6,9 +6,15 @@ You got a request from a friend to create a gallery for his wedding where his fr
 He wants to be able to approve the photos before being visible to everyone. He and his wife should be the only ones able to approve new photos.
 Users must be able to like photos and add comments to photos.
 
+## Links
+- [Documentation](https://HandBoy.github.io/friend-gallery/)
+- [Project Online](https://friend-gallery.herokuapp.com/)
 
 ## Setup Development to run the project
 ```shell
+# Clone the project
+$ git clone https://github.com/HandBoy/friend-gallery.git
+
 # Create Virtual Env.
 $ python3 -m venv venv-friend  
 
