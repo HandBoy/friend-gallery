@@ -1,0 +1,8 @@
+site_name: Friend Gallery
+
+nav:
+  - Getting Started: index.md
+  - Api Documentation: example.md
+
+theme:
+   name: 'material'

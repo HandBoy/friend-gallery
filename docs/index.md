@@ -1,11 +1,6 @@
-# friend-gallery
+# Getting Started
 
-The Problem: Friend's gallery
-
-You got a request from a friend to create a gallery for his wedding where his friends will be able to upload their photos and he will have a unified gallery with all friend's photos.
-He wants to be able to approve the photos before being visible to everyone. He and his wife should be the only ones able to approve new photos.
-Users must be able to like photos and add comments to photos.
-
+Full code on [github](https://github.com/HandBoy/friend-gallery).
 
 ## Setup Development to run the project
 ```shell
@@ -60,14 +55,16 @@ $ pytest tests/fields/test_fields.py
 # Run only particular test class in that file
 $ pytest tests/fields/test_fields.py::TestField
 ```
+![Screenshot](img/coverage.png)
 
 ## Project Struture
 The project use the MVC to share as responsibilities:
+
 - Model: Contains all documents salved in MongoDB, file: documents.py  
 - Views: Contains all endpoints, file: resources/views.py
 - Controllers: Contains the business logic, file: controllers/*py
 
-Below we have a explanation about all project files:
+Above we have a explanation about all project files:
 ```
 ├── docs/                            Project Documentation
 ├── gallery/                         Application(a documented folder)
@@ -99,23 +96,23 @@ Below we have a explanation about all project files:
 └── wsgi                             Used by Heroku to run application
 ```
 
-## Tasks
-- [x] Create a User.
-- [x] Authenticate a User.
-- [x] Create a gallery.
-- [x] Send photo from a gallery.
-- [X] He and his wife should be the only ones able to approve new photos.
-- [x] Approve Photos.
-- [X] Friends will be able to upload their photos.
-- [x] List photos only approved.
-- [ ] Add a comment in photo.
-- [x] Like a photo.
-- [x] Paginate photos.
-- [x] Send photo from AWS.
-- [x] Send to production.
-- [x] Mkdocs for document the Api.
-- [ ] Docker.
-- [x] Split domain.
-- [x] Estruturar o Readme.
-- [ ] Add MakeFile.
-- [ ] Improve Coverage.
+## Next Steps
+
+<ul class="task-list">
+    <li class="task-list-item">
+        <input type="checkbox" disabled="" checked="">
+        Paginate Photos
+    </li>
+    <li class="task-list-item">
+        <input type="checkbox" disabled="">
+        Add comments in photos
+    </li>
+    <li class="task-list-item">
+        <input type="checkbox" disabled="">
+        Docker
+    </li>
+    <li class="task-list-item">
+        <input type="checkbox" disabled="">
+        Optimize Mongo Queries
+    </li>
+</ul>
