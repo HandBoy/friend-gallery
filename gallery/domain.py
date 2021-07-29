@@ -149,7 +149,7 @@ def approve_picture(user_id: str, gallery_id: str, picture_id: str):
         return True
 
     raise GalleryPermission(
-        message="You dont have permission for approve this picture"
+        message="You don't have permission for approve this picture"
     )
 
 

@@ -60,7 +60,7 @@ class LoginResource(Resource):
                 return data, 200
 
         except ValidationError as err:
-            return err.messages, 422
+            return err.messages, 400
 
         raise LoginUnauthorized("Your login or password dont match")
 
@@ -72,7 +72,7 @@ class UserResource(Resource):
             if create_user(**data):
                 return None, 201
         except ValidationError as err:
-            return err.messages, 422
+            return err.messages, 400
         except UserAlreadyExists as err:
             return err.to_dict(), err.status_code
 
@@ -98,13 +98,32 @@ class UserGalleriesResource(Resource):
         return GalleryResponseSchema(many=True).dump(galery), 200
 
 
+class GalleriesResource(Resource):
+    @jwt_required()
+    def post(self):
+        try:
+            current_user = get_current_user()
+            galery = GalleryRequestSchema().load(request.get_json())
+
+            create_gallery(user=current_user, raw_gallery=galery)
+
+            return None, 201
+        except ValidationError as err:
+            return err.messages, 400
+        except UserNotFound as err:
+            return err.to_dict(), err.status_code
+
+    @jwt_required()
+    def get(self):
+        current_user = get_current_user()
+        galery = get_user_galleries(current_user._id)
+        return GalleryResponseSchema(many=True).dump(galery), 200
+
+
 class PicturesResource(Resource):
     @jwt_required()
     def get(self, gallery_id):
         try:
-            import ipdb
-
-            ipdb.set_trace()
             paginator = Paginator(
                 page=request.args.get("page", 0),
                 limit=request.args.get("limit", 5),

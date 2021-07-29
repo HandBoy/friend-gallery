@@ -35,7 +35,7 @@ class TestLogin:
         # Act
         response = client.post("/api/v1/login", data={})
         # Assert
-        assert response.status_code == 422
+        assert response.status_code == 400
 
     def test_fail_login_without_password(self, client):
         # GIVE
@@ -43,7 +43,7 @@ class TestLogin:
         # Act
         response = client.post("/api/v1/login", json=data)
         # Assert
-        assert response.status_code == 422
+        assert response.status_code == 400
         assert "password" in response.json
 
     def test_fail_login_without_email(self, client):
@@ -52,7 +52,7 @@ class TestLogin:
         # Act
         response = client.post("/api/v1/login", json=data)
         # Assert
-        assert response.status_code == 422
+        assert response.status_code == 400
         assert "email" in response.json
 
 
@@ -82,7 +82,7 @@ class TestCreateUser:
         # Act
         response = client.post("/api/v1/users", json=data)
         # Assert
-        assert response.status_code == 422
+        assert response.status_code == 400
         assert "password" in response.json
 
     def test_fail_without_password(self, client):
@@ -94,7 +94,7 @@ class TestCreateUser:
         # Act
         response = client.post("/api/v1/users", json=data)
         # Assert
-        assert response.status_code == 422
+        assert response.status_code == 400
         assert "password" in response.json
 
     def test_fail_without_email(self, client):
@@ -103,7 +103,7 @@ class TestCreateUser:
         # Act
         response = client.post("/api/v1/users", json=data)
         # Assert
-        assert response.status_code == 422
+        assert response.status_code == 400
         assert "email" in response.json
 
     def test_fail_without_name(self, client):
@@ -112,7 +112,7 @@ class TestCreateUser:
         # Act
         response = client.post("/api/v1/users", json=data)
         # Assert
-        assert response.status_code == 422
+        assert response.status_code == 400
         assert "name" in response.json
 
     def test_fail_user_already_exists(self, client, mocker):
@@ -135,13 +135,13 @@ class TestCreateUser:
 
 
 class TestCreateUserGallery:
-    def test_success_create_gallery(self, client, access_token, create_user):
+    def test_success_create_gallery(self, client, access_token):
         # Give
         data = {"name": "John Doe Gallery"}
         access_headers = {"Authorization": f"Bearer {access_token}"}
         # Act
         response = client.post(
-            f"/api/v1/users/{create_user._id}/gallery",
+            "/api/v1/galleries",
             headers=access_headers,
             json=data,
         )
@@ -152,7 +152,7 @@ class TestCreateUserGallery:
         # Give
         data = {"name": "Jonh Doe Gallery"}
         # Act
-        response = client.post("/api/v1/users/1/gallery", json=data)
+        response = client.post("/api/v1/galleries", json=data)
         # Assert
         assert response.status_code == 401
 
@@ -162,39 +162,25 @@ class TestCreateUserGallery:
         access_headers = {"Authorization": f"Bearer {access_token}"}
         # Act
         response = client.post(
-            "/api/v1/users/1/gallery",
+            "/api/v1/gallery",
             headers=access_headers,
             json=data,
         )
         # Assert
         assert response.status_code == 404
 
-    def test_fail_user_not_found(self, client, access_token):
+    def test_fail_without_name(self, client, access_token):
         # Give
         data = {}
         access_headers = {"Authorization": f"Bearer {access_token}"}
         # Act
         response = client.post(
-            f"/api/v1/users/{ObjectId()}/gallery",
+            "/api/v1/galleries",
             headers=access_headers,
             json=data,
         )
         # Assert
-        assert response.status_code == 404
-        assert "message" in response.json
-
-    def test_fail_without_name(self, client, access_token, create_user):
-        # Give
-        data = {}
-        access_headers = {"Authorization": f"Bearer {access_token}"}
-        # Act
-        response = client.post(
-            f"/api/v1/users/{create_user._id}/gallery",
-            headers=access_headers,
-            json=data,
-        )
-        # Assert
-        assert response.status_code == 422
+        assert response.status_code == 400
         assert "name" in response.json
 
 
@@ -205,7 +191,7 @@ class TestListUserGallery:
         access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         # Act
         response = client.get(
-            f"/api/v1/users/{user['user']._id}/gallery",
+            f"/api/v1/users/{user['user']._id}/galleries",
             headers=access_headers,
             json=data,
         )
@@ -221,7 +207,7 @@ class TestListUserGallery:
         access_headers = {"Authorization": f"Bearer {access_token}"}
         # Act
         response = client.get(
-            f"/api/v1/users/{ObjectId()}/gallery",
+            f"/api/v1/users/{ObjectId()}/galleries",
             headers=access_headers,
             json=data,
         )
@@ -235,7 +221,7 @@ class TestListUserGallery:
         access_headers = {"Authorization": f"Bearer {access_token}"}
         # Act
         response = client.get(
-            "/api/v1/users/abc/gallery",
+            "/api/v1/users/abc/galleries",
             headers=access_headers,
             json=data,
         )
@@ -248,7 +234,7 @@ class TestListUserGallery:
         data = {"name": "John Doe Gallery"}
         # Act
         response = client.get(
-            f"/api/v1/users/{create_user._id}/gallery",
+            f"/api/v1/users/{create_user._id}/galleries",
             json=data,
         )
         # Assert
@@ -256,6 +242,24 @@ class TestListUserGallery:
 
 
 class TestListPicturesUserGallery:
+    def test_success_validate_contract(
+        self, client, access_token, create_gallery
+    ):
+        # Give
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.get(
+            f"/api/v1/gallery/{create_gallery._id}/pictures",
+            headers=access_headers,
+        )
+        data = response.json
+        # Assert
+        assert response.status_code == 200
+        assert "next_page" in data
+        assert "previous_page" in data
+        assert "count" in data
+        assert "result" in data
+
     def test_success_gallery_without_pictures(
         self, client, access_token, create_gallery
     ):
@@ -268,7 +272,7 @@ class TestListPicturesUserGallery:
         )
         # Assert
         assert response.status_code == 200
-        assert len(response.json) == 0
+        assert len(response.json["result"]) == 0
 
     def test_success_gallery_with_your_pictures(self, client, user):
         # Give
@@ -280,7 +284,7 @@ class TestListPicturesUserGallery:
         )
         # Assert
         assert response.status_code == 200
-        assert len(response.json) == 2
+        assert len(response.json["result"]) == 2
 
     def test_success_gallery_belongs_another_user(
         self, client, access_token, create_gallery
@@ -294,7 +298,7 @@ class TestListPicturesUserGallery:
         )
         # Assert
         assert response.status_code == 200
-        assert len(response.json) == 0
+        assert len(response.json["result"]) == 0
 
     def test_fail_no_authorization(self, client, create_gallery):
         # Give
