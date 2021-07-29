@@ -1,6 +1,6 @@
 from flask import Blueprint
 from flask_restful import Api
-from .user import (
+from .views import (
     ApprovePicturesResource,
     FriendGalleryResource,
     GalleriesResource,

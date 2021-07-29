@@ -6,20 +6,20 @@ from flask_jwt_extended import (
     jwt_required,
 )
 from flask_restful import Resource
-from gallery.domain import (
-    Paginator,
+from gallery.controllers.gallery_controller import (
     add_gallery_friend,
     add_permission_to_approve,
-    approve_picture,
-    count_pictures,
     create_gallery,
     create_picture,
-    create_user,
-    find_user,
-    get_paginate_pictures,
     get_user_galleries,
+)
+from gallery.controllers.user_controller import create_user, login
+from gallery.controllers.picture_controller import (
+    Paginator,
+    approve_picture,
+    count_pictures,
+    get_paginate_pictures,
     like_picture,
-    login,
 )
 from gallery.exceptions import (
     GalleryNotFound,
@@ -78,20 +78,6 @@ class UserResource(Resource):
 
 
 class UserGalleriesResource(Resource):
-    @jwt_required()
-    def post(self, user_id):
-        try:
-            user = find_user(user_id)
-            galery = GalleryRequestSchema().load(request.get_json())
-
-            create_gallery(user=user, raw_gallery=galery)
-
-            return None, 201
-        except ValidationError as err:
-            return err.messages, 422
-        except UserNotFound as err:
-            return err.to_dict(), err.status_code
-
     @jwt_required()
     def get(self, user_id):
         galery = get_user_galleries(user_id)

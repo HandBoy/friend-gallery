@@ -7,7 +7,7 @@ class TestLogin:
     def test_success_login(self, client, mocker):
         # GIVE
         mocker.patch(
-            "gallery.resources.user.login",
+            "gallery.resources.views.login",
             return_value=UserModel(
                 email="e@e.com", name="a", password="12345678"
             ),
@@ -22,7 +22,7 @@ class TestLogin:
 
     def test_fail_login(self, client, mocker):
         # GIVE
-        mocker.patch("gallery.resources.user.login", return_value=False)
+        mocker.patch("gallery.resources.views.login", return_value=False)
         data = {"email": "hand4@gmail.com", "password": "123dfgdfg"}
         # Act
         response = client.post("/api/v1/login", json=data)
@@ -60,7 +60,7 @@ class TestCreateUser:
     def test_success_create_user(self, client, mocker):
         # GIVE
         mocker.patch(
-            "gallery.resources.user.create_user", return_value=object()
+            "gallery.resources.views.create_user", return_value=object()
         )
         data = {
             "email": "hand5@gmail.com",
@@ -118,7 +118,7 @@ class TestCreateUser:
     def test_fail_user_already_exists(self, client, mocker):
         # GIVE
         mocker.patch(
-            "gallery.resources.user.create_user",
+            "gallery.resources.views.create_user",
             side_effect=UserAlreadyExists("vish"),
         )
         data = {
@@ -328,7 +328,7 @@ class TestCreatePicturesUserGallery:
         access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         data = {"name": "123", "description": "213", "photo_file": file}
         mocker.patch(
-            "gallery.domain.upload_file_to_s3",
+            "gallery.controllers.gallery_controller.upload_file_to_s3",
             return_value="http://bucket.s3.amazonaws.com/Input.jpg",
         )
         # Act
@@ -450,7 +450,7 @@ class TestCreatePicturesUserGallery:
         access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         data = {"name": "123", "description": "213", "photo_file": file}
         mocker.patch(
-            "gallery.domain.upload_file_to_s3",
+            "gallery.controllers.gallery_controller.upload_file_to_s3",
             side_effect=FileUploadException("vish"),
         )
         # Act
