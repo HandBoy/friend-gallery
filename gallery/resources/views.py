@@ -25,7 +25,6 @@ from gallery.exceptions import (
     GalleryNotFound,
     LoginUnauthorized,
     UserAlreadyExists,
-    UserNotFound,
 )
 from gallery.resources.serializers.inbound import (
     EmailRequestSchema,
@@ -170,7 +169,7 @@ class PictureLikeResource(Resource):
             return err.to_dict(), err.status_code
 
 
-class ApproverResource(Resource):
+class ApproverGalleryResource(Resource):
     @jwt_required()
     def post(self, gallery_id):
         try:

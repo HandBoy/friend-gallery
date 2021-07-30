@@ -8,7 +8,7 @@ from .views import (
     LoginResource,
     PicturesResource,
     UserResource,
-    ApproverResource,
+    ApproverGalleryResource,
     PictureLikeResource,
 )
 
@@ -24,7 +24,7 @@ def init_app(app):
     api.add_resource(GalleriesResource, "/galleries")
 
     api.add_resource(
-        ApproverResource,
+        ApproverGalleryResource,
         "/gallery/<string:gallery_id>/approver",
     )
     api.add_resource(
