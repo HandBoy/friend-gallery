@@ -89,6 +89,18 @@ def access_token(create_user):
 
 
 @pytest.fixture()
+def token_with_invalid_user_id(create_user):
+    info = {"email": create_user.email, "id": "abc123"}
+    return create_access_token(info)
+
+
+@pytest.fixture()
+def token_with_invalid_user_id(create_user):
+    info = {"email": "nao_tem_user@email.com", "id": "abc123"}
+    return create_access_token(info)
+
+
+@pytest.fixture()
 def user():
     id = ObjectId()
     user = UserModel(

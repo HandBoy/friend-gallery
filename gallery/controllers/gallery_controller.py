@@ -5,11 +5,9 @@ from werkzeug.utils import secure_filename
 
 
 def create_gallery(user: UserModel, raw_gallery: dict):
-    # TODO Improve that
     gallery = GalleryModel(**raw_gallery)
-    user.save()
-    gallery.user = user.to_dbref()
-    gallery.can_approve.append(user.to_dbref())
+    gallery.user = user._id
+    gallery.can_approve.append(user._id)
     gallery.save()
 
 

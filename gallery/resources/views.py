@@ -96,8 +96,6 @@ class GalleriesResource(Resource):
             return None, 201
         except ValidationError as err:
             return err.messages, 400
-        except UserNotFound as err:
-            return err.to_dict(), err.status_code
 
     @jwt_required()
     def get(self):
