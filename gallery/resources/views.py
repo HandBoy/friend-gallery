@@ -1,3 +1,4 @@
+from gallery.paginator import Paginator
 from flask import request
 from flask_jwt_extended import (
     create_access_token,
@@ -15,7 +16,6 @@ from gallery.controllers.gallery_controller import (
 )
 from gallery.controllers.user_controller import create_user, login
 from gallery.controllers.picture_controller import (
-    Paginator,
     approve_picture,
     count_pictures,
     get_paginate_pictures,
