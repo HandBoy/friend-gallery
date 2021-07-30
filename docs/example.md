@@ -15,6 +15,19 @@ For resolver the test I developed the endpoints:
 | /galleries/{galleries_id}/pictures/{picture_id}/like    | Show and save images from a gallery.                  |
 | /galleries/{galleries_id}/pictures/{picture_id}/approve | Approve a photo.                                      |
 
+## Authentication
+Some endpoints needed authentication. This project user JWT bearer token in the header to validate a logged user. If you do successfull login, the responde will be:
+
+```json
+{
+  "refresh_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyNzYwNDkzNCwianRpIjoiMjM4Nzc1ODYtZTUyZC00NmExLWFmNjAtOTg2NWFjYTY3ZGY5IiwidHlwZSI6InJlZnJlc2giLCJzdWIiOnsiZW1haWwiOiJoYW5kNkBnbWFpbC5jb20iLCJpZCI6IjYwZmMyMzU5NTBjZWNmOWNjZjY0MWE0MiJ9LCJuYmYiOjE2Mjc2MDQ5MzQsImV4cCI6MTYzMDE5NjkzNH0.RGgBavDQbtG8JBAHGEuzUkUtkfjRHlk_vlU40ABamV0",
+  "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyNzYwNDkzNCwianRpIjoiMTg0ODY4ZjctMTcyYy00ZDJkLWI1MzQtN2M5MWUzZjFlODk2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJlbWFpbCI6ImhhbmQ2QGdtYWlsLmNvbSIsImlkIjoiNjBmYzIzNTk1MGNlY2Y5Y2NmNjQxYTQyIn0sIm5iZiI6MTYyNzYwNDkzNCwiZXhwIjoxNjI3NjEyMTM0fQ.8SEW-cIIEdY6wnLqqcBWCcAnEfkHEOF_bKjnIegAigM"
+}
+```
+
+The **access_token** permits you to access protected resources and identify with the user do the request. By default, your expiration was set at 120 min.
+
+The **refresh_token** permits you to request a new valid access token in case your access token was expired.
 
 ## Login
 
