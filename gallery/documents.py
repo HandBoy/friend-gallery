@@ -125,20 +125,6 @@ class GalleryModel(Document):
         return paginated_pics
 
     @staticmethod
-    def like_picture_by_id(gallery_id, picture_id):
-        try:
-            picture = (
-                GalleryModel.objects(_id=gallery_id)
-                .get()
-                .pictures.filter(id=picture_id)
-            )
-            picture.get().likes += 1
-            picture.save()
-            return True
-        except (DoesNotExist, ValidationError):
-            return False
-
-    @staticmethod
     def are_you_friend(user_id, gallery_id):
         if not GalleryModel.objects(_id=gallery_id, friends__in=[user_id]):
             return False

@@ -25,15 +25,19 @@ def count_pictures(gallery_id: str):
 
 
 def like_picture(gallery_id: str, picture_id: str):
+    gallery = GalleryModel.find_gallery_by_id(id=gallery_id)
 
-    was_liked = GalleryModel.like_picture_by_id(
-        gallery_id=gallery_id, picture_id=picture_id
-    )
+    if not gallery:
+        raise GalleryNotFound(message="Gallery Not Found")
 
-    if not was_liked:
-        raise GalleryNotFound(message="Picture Not Found")
+    picture = gallery.pictures.filter(id=picture_id)
+    try:
+        picture.get().likes += 1
+        picture.save()
 
-    return was_liked
+        return True
+    except DoesNotExist:
+        raise PictureNotFound("Picture not Found")
 
 
 def approve_picture(user_id: str, gallery_id: str, picture_id: str):

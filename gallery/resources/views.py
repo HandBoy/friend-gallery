@@ -159,14 +159,8 @@ class PicturesResource(Resource):
 class PictureLikeResource(Resource):
     @jwt_required()
     def post(self, gallery_id, picture_id):
-        try:
-            like_picture(gallery_id=gallery_id, picture_id=picture_id)
-            return None, 200
-
-        except ValidationError as err:
-            return err.messages, 422
-        except GalleryNotFound as err:
-            return err.to_dict(), err.status_code
+        like_picture(gallery_id=gallery_id, picture_id=picture_id)
+        return None, 200
 
 
 class ApproverGalleryResource(Resource):
