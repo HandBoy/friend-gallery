@@ -39,9 +39,6 @@ class UserModel(Document):
         except (DoesNotExist, ValidationError):
             return None
 
-    def to_dict(self):
-        return {"email": self.email, "username": self.username}
-
 
 class PicturesModel(EmbeddedDocument):
     id = UUIDField(default=str(uuid.uuid4()))
@@ -142,21 +139,6 @@ class GalleryModel(Document):
             return False
 
     @staticmethod
-    def approve_picture(gallery_id, user_id, picture_id, status=True):
-        can_approve = GalleryModel.objects(
-            _id=gallery_id, can_approve__in=[user_id]
-        )
-
-        if not can_approve:
-            return False
-
-        picture = can_approve.get().pictures.filter(id=picture_id)
-        picture.get().approved = status
-        picture.save()
-
-        return True
-
-    @staticmethod
     def are_you_friend(user_id, gallery_id):
         if not GalleryModel.objects(_id=gallery_id, friends__in=[user_id]):
             return False
@@ -179,3 +161,10 @@ class GalleryModel(Document):
     def add_friend_to_upload(self, user_id):
         self.friends.append(user_id)
         self.save()
+
+    def are_you_approver(self, user_id):
+        for user in self.can_approve:
+            if user_id == user.id:
+                return True
+
+        return False

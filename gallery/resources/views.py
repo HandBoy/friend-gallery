@@ -187,13 +187,9 @@ class ApproverGalleryResource(Resource):
 class ApprovePicturesResource(Resource):
     @jwt_required()
     def put(self, gallery_id, picture_id):
-        try:
-            current_user = get_current_user()
-            approve_picture(current_user._id, gallery_id, picture_id)
-            return None, 200
-
-        except ValidationError as err:
-            return err.messages, 400
+        current_user = get_current_user()
+        approve_picture(current_user._id, gallery_id, picture_id)
+        return None, 200
 
 
 class FriendGalleryResource(Resource):

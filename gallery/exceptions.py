@@ -32,6 +32,10 @@ class GalleryNotFound(FriendGalleryException):
     status_code = 404
 
 
+class PictureNotFound(FriendGalleryException):
+    status_code = 404
+
+
 class GalleryPermission(FriendGalleryException):
     status_code = 401
 
@@ -87,6 +91,12 @@ def handle_api_exceptions(app):
 
     @app.errorhandler(FileValidationException)
     def handle_file_validation_error(error):
+        response = jsonify(error.to_dict())
+        response.status_code = error.status_code
+        return response
+
+    @app.errorhandler(PictureNotFound)
+    def handle_picture_not_found_error(error):
         response = jsonify(error.to_dict())
         response.status_code = error.status_code
         return response

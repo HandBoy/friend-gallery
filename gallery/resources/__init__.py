@@ -19,7 +19,9 @@ def init_app(app):
     # User
     api.add_resource(LoginResource, "/login")
     api.add_resource(UserResource, "/users")
-    api.add_resource(UserGalleriesResource, "/users/<string:user_id>/galleries")
+    api.add_resource(
+        UserGalleriesResource, "/users/<string:user_id>/galleries"
+    )
     # Galleries
     api.add_resource(GalleriesResource, "/galleries")
 

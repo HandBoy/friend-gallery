@@ -1,7 +1,11 @@
 from mongoengine.errors import DoesNotExist
 
 from gallery.documents import GalleryModel
-from gallery.exceptions import GalleryNotFound, GalleryPermission
+from gallery.exceptions import (
+    GalleryNotFound,
+    GalleryPermission,
+    PictureNotFound,
+)
 
 
 def get_paginate_pictures(
@@ -33,9 +37,21 @@ def like_picture(gallery_id: str, picture_id: str):
 
 
 def approve_picture(user_id: str, gallery_id: str, picture_id: str):
-    if GalleryModel.approve_picture(gallery_id, user_id, picture_id):
-        return True
+    gallery = GalleryModel.find_gallery_by_id(id=gallery_id)
 
-    raise GalleryPermission(
-        message="You don't have permission for approve this picture"
-    )
+    if not gallery:
+        raise GalleryNotFound(message="Gallery Not Found")
+
+    if not gallery.are_you_approver(user_id):
+        raise GalleryPermission(
+            message="You don't have permission for approve this picture"
+        )
+
+    picture = gallery.pictures.filter(id=picture_id)
+    try:
+        picture.get().approved = True
+        picture.save()
+
+        return True
+    except DoesNotExist:
+        raise PictureNotFound("Picture not Found")
