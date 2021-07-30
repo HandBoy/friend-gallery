@@ -1,0 +1,10 @@
+[run]
+omit =
+    gallery/tests/*
+
+[report]
+omit =
+
+
+[html]
+directory = coverage
