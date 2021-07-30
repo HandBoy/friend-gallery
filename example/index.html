@@ -230,6 +230,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    Authentication
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#login" class="md-nav__link">
     Login
   </a>
@@ -387,6 +394,13 @@
         <li class="md-nav__item">
   <a href="#overview" class="md-nav__link">
     Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#authentication" class="md-nav__link">
+    Authentication
   </a>
   
 </li>
@@ -575,6 +589,15 @@
 </tr>
 </tbody>
 </table>
+<h2 id="authentication">Authentication</h2>
+<p>Some endpoints needed authentication. This project user JWT bearer token in the header to validate a logged user. If you do successfull login, the responde will be:</p>
+<pre><code class="language-json">{
+  &quot;refresh_token&quot;: &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyNzYwNDkzNCwianRpIjoiMjM4Nzc1ODYtZTUyZC00NmExLWFmNjAtOTg2NWFjYTY3ZGY5IiwidHlwZSI6InJlZnJlc2giLCJzdWIiOnsiZW1haWwiOiJoYW5kNkBnbWFpbC5jb20iLCJpZCI6IjYwZmMyMzU5NTBjZWNmOWNjZjY0MWE0MiJ9LCJuYmYiOjE2Mjc2MDQ5MzQsImV4cCI6MTYzMDE5NjkzNH0.RGgBavDQbtG8JBAHGEuzUkUtkfjRHlk_vlU40ABamV0&quot;,
+  &quot;access_token&quot;: &quot;eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6ZmFsc2UsImlhdCI6MTYyNzYwNDkzNCwianRpIjoiMTg0ODY4ZjctMTcyYy00ZDJkLWI1MzQtN2M5MWUzZjFlODk2IiwidHlwZSI6ImFjY2VzcyIsInN1YiI6eyJlbWFpbCI6ImhhbmQ2QGdtYWlsLmNvbSIsImlkIjoiNjBmYzIzNTk1MGNlY2Y5Y2NmNjQxYTQyIn0sIm5iZiI6MTYyNzYwNDkzNCwiZXhwIjoxNjI3NjEyMTM0fQ.8SEW-cIIEdY6wnLqqcBWCcAnEfkHEOF_bKjnIegAigM&quot;
+}
+</code></pre>
+<p>The <strong>access_token</strong> permits you to access protected resources and identify with the user do the request. By default, your expiration was set at 120 min.</p>
+<p>The <strong>refresh_token</strong> permits you to request a new valid access token in case your access token was expired.</p>
 <h2 id="login">Login</h2>
 <h3 id="login_1">/login</h3>
 <p>Endpoint to validate a email and passord from a user, responding with access token.</p>
