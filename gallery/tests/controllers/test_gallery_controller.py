@@ -1,12 +1,17 @@
 from gallery.controllers.gallery_controller import (
-    can_permission_to_upload_in_gallery, create_picture)
+    can_permission_to_upload_in_gallery,
+    create_picture,
+)
 from gallery.exceptions import GalleryPermission
 from pytest import raises
 
 
 def test_fail_you_dont_have_permission_to_upload(mocker, app, user):
     mocker.patch(
-        "gallery.controllers.gallery_controller.GalleryModel.find_gallery_by_user_and_id",
+        (
+            "gallery.controllers.gallery_controller"
+            ".GalleryModel.find_gallery_by_user_and_id"
+        ),
         return_value=False,
     )
     mocker.patch(
@@ -19,7 +24,10 @@ def test_fail_you_dont_have_permission_to_upload(mocker, app, user):
 
 def test_fail_you_dont_have_permission_for_upload(mocker):
     mocker.patch(
-        "gallery.controllers.gallery_controller.can_permission_to_upload_in_gallery",
+        (
+            "gallery.controllers.gallery_controller."
+            "can_permission_to_upload_in_gallery"
+        ),
         return_value=False,
     )
 
@@ -27,4 +35,5 @@ def test_fail_you_dont_have_permission_for_upload(mocker):
         create_picture("123", "123", {})
 
 
-def test_success_add_gallery_friend()
+def test_success_add_gallery_friend():
+    pass

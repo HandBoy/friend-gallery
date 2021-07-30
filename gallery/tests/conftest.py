@@ -95,7 +95,7 @@ def token_with_invalid_user_id(create_user):
 
 
 @pytest.fixture()
-def token_with_invalid_user_id(create_user):
+def token_with_invalid_email(create_user):
     info = {"email": "nao_tem_user@email.com", "id": "abc123"}
     return create_access_token(info)
 
