@@ -119,26 +119,46 @@ class GalleryModel(Document):
     @staticmethod
     def get_pictures_approved(gallery_id, page=0, limit=10):
         paginated_pics = GalleryModel.get_pictures(
-            gallery_id, page=0, limit=5
+            gallery_id, page, limit=limit
         ).filter(approved=True)
 
         return paginated_pics
 
     @staticmethod
-    def are_you_friend(user_id, gallery_id):
-        if not GalleryModel.objects(_id=gallery_id, friends__in=[user_id]):
-            return False
-
-        return True
-
-    @staticmethod
-    def are_you_owner(gallery_id, user_id):
+    def are_you_owner(gallery_id, user_id) -> bool:
         owner = GalleryModel.find_gallery_by_user_and_id(user_id, gallery_id)
 
         if not owner:
             return False
 
         return True
+
+    def do_you_have_permission_to_upload(self, user_id) -> bool:
+        if not self.are_u_owner(user_id):
+            if not self.are_you_friend(user_id):
+                return False
+
+        return True
+
+    def are_you_friend(self, user_id) -> bool:
+        for user in self.friends:
+            if user_id == user.id:
+                return True
+
+        return False
+
+    def are_you_approver(self, user_id) -> bool:
+        for user in self.can_approve:
+            if user_id == user.id:
+                return True
+
+        return False
+
+    def are_u_owner(self, user_id) -> bool:
+        if user_id == str(self.user._id):
+            return True
+
+        return False
 
     def append_approver(self, user_id):
         self.can_approve.append(user_id)
@@ -147,10 +167,3 @@ class GalleryModel(Document):
     def add_friend_to_upload(self, user_id):
         self.friends.append(user_id)
         self.save()
-
-    def are_you_approver(self, user_id):
-        for user in self.can_approve:
-            if user_id == user.id:
-                return True
-
-        return False

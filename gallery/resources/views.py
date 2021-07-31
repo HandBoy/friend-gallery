@@ -1,3 +1,4 @@
+from werkzeug.utils import secure_filename
 from gallery.paginator import Paginator
 from flask import request
 from flask_jwt_extended import (
@@ -137,11 +138,14 @@ class PicturesResource(Resource):
     @jwt_required()
     def post(self, gallery_id):
         try:
+            current_user = get_current_user()
             data = {**dict(request.files), **dict(request.form)}
-
             picture = PictureRequestSchema().load(data)
 
-            current_user = get_current_user()
+            picture["photo_file"].filename = (
+                f"{str(current_user._id)}/{gallery_id}/"
+                f"{secure_filename(picture['photo_file'].filename)}"
+            )
 
             create_picture(
                 user_id=str(current_user._id),
@@ -152,8 +156,6 @@ class PicturesResource(Resource):
 
         except ValidationError as err:
             return err.messages, 400
-        except GalleryNotFound as err:
-            return err.to_dict(), err.status_code
 
 
 class PictureLikeResource(Resource):

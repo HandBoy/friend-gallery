@@ -1,7 +1,6 @@
 from gallery.documents import GalleryModel, PicturesModel, UserModel
 from gallery.exceptions import GalleryNotFound, GalleryPermission, UserNotFound
 from gallery.ext.s3 import upload_file_to_s3
-from werkzeug.utils import secure_filename
 
 
 def create_gallery(user: UserModel, raw_gallery: dict):
@@ -27,26 +26,11 @@ def get_gallery_by_user_and_id(user_id: str, gallery_id: str):
     return gallery
 
 
-def can_permission_to_upload_in_gallery(user_id, gallery_id):
-    # gallery is your?
-    gallery = GalleryModel.find_gallery_by_user_and_id(user_id, gallery_id)
-    if not gallery:
-        # your are friend ?
-        gallery = GalleryModel.are_you_friend(user_id, gallery_id)
-        if not gallery:
-            return False
-
-    return True
-
-
 def create_picture(user_id: str, gallery_id: str, raw_picture: dict):
-    if not can_permission_to_upload_in_gallery(user_id, gallery_id):
-        raise GalleryPermission(message="You dont have permission for upload.")
+    gallery = GalleryModel.find_gallery_by_id(id=gallery_id)
 
-    raw_picture["photo_file"].filename = (
-        f"{user_id}/{gallery_id}/"
-        f"{secure_filename(raw_picture['photo_file'].filename)}"
-    )
+    if not gallery.do_you_have_permission_to_upload(user_id):
+        raise GalleryPermission(message="You dont have permission for upload.")
 
     output = upload_file_to_s3(raw_picture["photo_file"])
     gallery = GalleryModel.find_gallery_by_id(gallery_id)

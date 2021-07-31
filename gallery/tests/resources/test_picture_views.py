@@ -1,10 +1,9 @@
 from bson.objectid import ObjectId
+from gallery.exceptions import FileUploadException
 
 
 class TestApprovePicture:
-    def test_success_user_can_approve_a_picture(
-        self, client, user
-    ):
+    def test_success_user_can_approve_a_picture(self, client, user):
         # Give
         access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         # Act
@@ -58,9 +57,7 @@ class TestApprovePicture:
         # Assert
         assert response.status_code == 404
 
-    def test_fail_picture_not_found(
-        self, client, user
-    ):
+    def test_fail_picture_not_found(self, client, user):
         # Give
         access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         # Act
@@ -74,9 +71,7 @@ class TestApprovePicture:
         # Assert
         assert response.status_code == 404
 
-    def test_fail_invalid_picture_id(
-        self, client, user
-    ):
+    def test_fail_invalid_picture_id(self, client, user):
         # Give
         access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         # Act
@@ -199,3 +194,230 @@ class TestLikePicture:
         )
         # Assert
         assert response.status_code == 404
+
+
+class TestCreatePicturesUserGallery:
+    def test_success_add_new_picture(self, mocker, client, user, file):
+        # Give
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
+        data = {"name": "123", "description": "213", "photo_file": file}
+        mocker.patch(
+            "gallery.controllers.gallery_controller.upload_file_to_s3",
+            return_value="http://bucket.s3.amazonaws.com/Input.jpg",
+        )
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
+            headers=access_headers,
+            data=data,
+            content_type="multipart/form-data",
+        )
+        # Assert
+        assert response.status_code == 201
+
+    def test_success_friend_upload(
+        self, mocker, client, access_token, user, file
+    ):
+        # Give
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        data = {"name": "123", "description": "213", "photo_file": file}
+        mocker.patch(
+            (
+                "gallery.controllers.gallery_controller."
+                "GalleryModel.are_you_friend"
+            ),
+            return_value=True,
+        )
+        mocker.patch(
+            "gallery.controllers.gallery_controller.upload_file_to_s3",
+            return_value="http://bucket.s3.amazonaws.com/Input.jpg",
+        )
+        # Act
+
+        response = client.post(
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
+            headers=access_headers,
+            data=data,
+            content_type="multipart/form-data",
+        )
+
+        # Assert
+        assert response.status_code == 201
+
+    def test_fail_without_authorization(self, client, create_gallery):
+        # Give
+        data = {"name": "123", "description": "eitasdae", "url": "adasdasdas"}
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{create_gallery._id}/pictures",
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 401
+
+    def test_fail_gallery_doesnt_exist(
+        self, client, access_token, create_gallery
+    ):
+        # Give
+        data = {"name": "123", "description": "eitasdae", "url": "adasdasdas"}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
+            (
+                f"/api/v1/users/{create_gallery.user._id}"
+                f"/gallery/{ObjectId()}/pictures"
+            ),
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 404
+
+    def test_fail_invalid_gallery_id(
+        self, client, access_token, create_gallery
+    ):
+        # Give
+        data = {"name": "123", "description": "eitasdae", "url": "adasdasdas"}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
+            (
+                f"/api/v1/users/{create_gallery.user._id}"
+                "/gallery/123gfhd/pictures"
+            ),
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 404
+
+    def test_fail_user_doesnt_exist(
+        self, client, access_token, create_gallery
+    ):
+        # Give
+        data = {"name": "123", "description": "eitasdae", "url": "adasdasdas"}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
+            (
+                f"/api/v1/users/{ObjectId()}"
+                f"/gallery/{create_gallery._id}/pictures"
+            ),
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 404
+
+    def test_fail_invalid_user_id(self, client, access_token, create_gallery):
+        # Give
+        data = {"name": "123", "description": "eitasdae", "url": "adasdasdas"}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.post(
+            ("/api/v1/users/123fgh" f"/gallery/{create_gallery._id}/pictures"),
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 404
+
+    def test_fail_without_name(self, client, user, file):
+        # Give
+        data = {"description": "eitasdae", "photo_file": file}
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
+            headers=access_headers,
+            data=data,
+        )
+        # Assert
+        assert response.status_code == 400
+
+    def test_fail_without_image(self, client, user):
+        # Give
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
+        data = {"name": "123", "description": "213"}
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
+            headers=access_headers,
+            data=data,
+            content_type="multipart/form-data",
+        )
+        # Assert
+        assert response.status_code == 400
+
+    def test_fail_image_with_empty_file_name(self, client, user, file):
+        # Give
+        file.filename = ""
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
+        data = {"name": "123", "description": "213", "photo_file": file}
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
+            headers=access_headers,
+            data=data,
+            content_type="multipart/form-data",
+        )
+        # Assert
+        assert response.status_code == 400
+
+    def test_fail_file_with_extension_not_allowed(self, client, user, file):
+        # Give
+        file.filename = "Input.exe"
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
+        data = {"name": "123", "description": "213", "photo_file": file}
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
+            headers=access_headers,
+            data=data,
+            content_type="multipart/form-data",
+        )
+        # Assert
+        assert response.status_code == 400
+
+    def test_fail_send_image_to_s3(self, mocker, client, user, file):
+        # Give
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
+        data = {"name": "123", "description": "213", "photo_file": file}
+        mocker.patch(
+            "gallery.controllers.gallery_controller.upload_file_to_s3",
+            side_effect=FileUploadException("vish"),
+        )
+        # Act
+        response = client.post(
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
+            headers=access_headers,
+            data=data,
+            content_type="multipart/form-data",
+        )
+        # Assert
+        assert response.status_code == 400
+
+    def test_fail_upload_me_not_friend(
+        self, mocker, client, access_token, user, file
+    ):
+        # Give
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        data = {"name": "123", "description": "213", "photo_file": file}
+        mocker.patch(
+            (
+                "gallery.controllers.gallery_controller."
+                "GalleryModel.are_you_friend"
+            ),
+            return_value=False,
+        )
+        # Act
+
+        response = client.post(
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
+            headers=access_headers,
+            data=data,
+            content_type="multipart/form-data",
+        )
+
+        # Assert
+        assert response.status_code == 401
