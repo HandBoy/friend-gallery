@@ -29,11 +29,13 @@ def get_gallery_by_user_and_id(user_id: str, gallery_id: str):
 def create_picture(user_id: str, gallery_id: str, raw_picture: dict):
     gallery = GalleryModel.find_gallery_by_id(id=gallery_id)
 
+    if not gallery:
+        raise GalleryNotFound(message="Gallery Not Found")
+
     if not gallery.do_you_have_permission_to_upload(user_id):
-        raise GalleryPermission(message="You dont have permission for upload.")
+        raise GalleryPermission(message="You dont have permission to upload.")
 
     output = upload_file_to_s3(raw_picture["photo_file"])
-    gallery = GalleryModel.find_gallery_by_id(gallery_id)
 
     picture = PicturesModel(
         name=raw_picture["name"],
@@ -41,7 +43,7 @@ def create_picture(user_id: str, gallery_id: str, raw_picture: dict):
         url=str(output),
     )
     gallery.pictures.append(picture)
-    gallery.save()
+    gallery.cascade_save()
 
     return None, 201
 

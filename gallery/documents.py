@@ -1,3 +1,6 @@
+from __future__ import annotations
+from typing import List, Optional
+
 import uuid
 from datetime import datetime
 
@@ -71,15 +74,15 @@ class GalleryModel(Document):
     updated_at = DateTimeField(default=datetime.utcnow())
 
     @staticmethod
-    def find_gallery_by_user(user_id):
+    def find_gallery_by_user(user_id) -> List[GalleryModel]:
         try:
             galleries = list(GalleryModel.objects(user=user_id))
             return galleries
         except ValidationError:
-            return None
+            return []
 
     @staticmethod
-    def find_gallery_by_id(id):
+    def find_gallery_by_id(id) -> Optional[GalleryModel]:
         try:
             gallery = GalleryModel.objects(_id=id).get()
             return gallery
@@ -87,7 +90,9 @@ class GalleryModel(Document):
             return None
 
     @staticmethod
-    def find_gallery_by_user_and_id(user_id, gallery_id):
+    def find_gallery_by_user_and_id(
+        user_id, gallery_id
+    ) -> Optional[GalleryModel]:
         try:
             gallery = GalleryModel.objects(user=user_id, _id=gallery_id).get()
             return gallery
@@ -103,12 +108,11 @@ class GalleryModel(Document):
 
         return gallery.pictures
 
-    @staticmethod
-    def get_pictures(gallery_id, page=0, limit=5):
+    def get_pictures(self, page=0, limit=5) -> PicturesModel:
         first = page * limit
 
         paginated_pics = (
-            GalleryModel.objects(_id=gallery_id)
+            GalleryModel.objects(_id=self._id)
             .fields(slice__pictures=[first, limit])
             .get()
             .pictures
@@ -117,32 +121,29 @@ class GalleryModel(Document):
         return paginated_pics
 
     @staticmethod
-    def get_pictures_approved(gallery_id, page=0, limit=10):
+    def get_approved_pictures(gallery_id, page=0, limit=5) -> PicturesModel:
         paginated_pics = GalleryModel.get_pictures(
             gallery_id, page, limit=limit
         ).filter(approved=True)
 
         return paginated_pics
 
-    @staticmethod
-    def are_you_owner(gallery_id, user_id) -> bool:
-        owner = GalleryModel.find_gallery_by_user_and_id(user_id, gallery_id)
-
-        if not owner:
-            return False
-
-        return True
-
     def do_you_have_permission_to_upload(self, user_id) -> bool:
-        if not self.are_u_owner(user_id):
+        if not self.are_you_owner(user_id):
             if not self.are_you_friend(user_id):
                 return False
 
         return True
 
+    def are_you_owner(self, user_id: str) -> bool:
+        if str(user_id) == str(self.user._id):
+            return True
+
+        return False
+
     def are_you_friend(self, user_id) -> bool:
         for user in self.friends:
-            if user_id == user.id:
+            if user_id == str(user.id):
                 return True
 
         return False
@@ -151,12 +152,6 @@ class GalleryModel(Document):
         for user in self.can_approve:
             if user_id == user.id:
                 return True
-
-        return False
-
-    def are_u_owner(self, user_id) -> bool:
-        if user_id == str(self.user._id):
-            return True
 
         return False
 
