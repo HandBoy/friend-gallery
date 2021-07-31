@@ -19,11 +19,10 @@ from gallery.controllers.user_controller import create_user, login
 from gallery.controllers.picture_controller import (
     approve_picture,
     count_pictures,
-    get_paginate_pictures,
+    get_pictures,
     like_picture,
 )
 from gallery.exceptions import (
-    GalleryNotFound,
     LoginUnauthorized,
     UserAlreadyExists,
 )
@@ -107,33 +106,28 @@ class GalleriesResource(Resource):
 class PicturesResource(Resource):
     @jwt_required()
     def get(self, gallery_id):
-        try:
-            paginator = Paginator(
-                page=request.args.get("page", 0),
-                limit=request.args.get("limit", 5),
-                url=f"/gallery/{gallery_id}/pictures",
-            )
+        paginator = Paginator(
+            page=request.args.get("page", 0),
+            limit=request.args.get("limit", 5),
+            url=f"/gallery/{gallery_id}/pictures",
+        )
 
-            current_user = get_current_user()
+        current_user = get_current_user()
 
-            pictures = get_paginate_pictures(
-                current_user._id, gallery_id, paginator.page, paginator.limit
-            )
-            count = count_pictures(gallery_id)
+        pictures = get_pictures(
+            current_user._id, gallery_id, paginator.page, paginator.limit
+        )
+        count = count_pictures(gallery_id)
 
-            data = {
-                "previous_page": paginator.previous_page,
-                "next_page": paginator.next_page,
-                "count": count,
-                "result": pictures,
-            }
-            pag = PicturePagResponseSchema().dump(data)
+        data = {
+            "previous_page": paginator.previous_page,
+            "next_page": paginator.next_page,
+            "count": count,
+            "result": pictures,
+        }
+        pag = PicturePagResponseSchema().dump(data)
 
-            return pag, 200
-        except GalleryNotFound as err:
-            return err.to_dict(), err.status_code
-        except ValidationError as err:
-            return err.messages, 400
+        return pag, 200
 
     @jwt_required()
     def post(self, gallery_id):
