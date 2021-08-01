@@ -1,3 +1,4 @@
+from gallery.controllers.user_controller import find_user
 from gallery.documents import GalleryModel, PicturesModel, UserModel
 from gallery.exceptions import GalleryNotFound, GalleryPermission, UserNotFound
 from gallery.ext.s3 import upload_file_to_s3
@@ -11,7 +12,8 @@ def create_gallery(user: UserModel, raw_gallery: dict):
 
 
 def get_user_galleries(user_id: str):
-    galleries = GalleryModel.find_gallery_by_user(user_id=user_id)
+    find_user(user_id)
+    galleries = GalleryModel.find_galleries_by_user(user_id=user_id)
     return galleries
 
 

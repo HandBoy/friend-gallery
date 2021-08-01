@@ -74,7 +74,7 @@ class GalleryModel(Document):
     updated_at = DateTimeField(default=datetime.utcnow())
 
     @staticmethod
-    def find_gallery_by_user(user_id) -> List[GalleryModel]:
+    def find_galleries_by_user(user_id) -> List[GalleryModel]:
         try:
             galleries = list(GalleryModel.objects(user=user_id))
             return galleries

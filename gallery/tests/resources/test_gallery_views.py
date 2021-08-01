@@ -1,4 +1,5 @@
 from bson.objectid import ObjectId
+from flask_jwt_extended.utils import decode_token
 
 
 class TestCreateUserGallery:
@@ -45,6 +46,65 @@ class TestListYourGalleries:
         access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         # Act
         response = client.get(
+            "/api/v1/galleries",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 200
+        assert len(response.json) == 1
+
+    def test_success_user_without_gallery(self, client, access_token):
+        # Give
+        # TODO create user wihtou gallery
+        data = {"name": "John Doe Gallery"}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+        # Act
+        response = client.get(
+            "/api/v1/galleries",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 200
+        assert len(response.json) == 0
+
+    def test_fail_without_athorization(self, client, create_user):
+        # Give
+        data = {"name": "John Doe Gallery"}
+        # Act
+        response = client.get(
+            "/api/v1/galleries",
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 401
+
+    def test_fail_jwt_token_with_invalid_user_id(
+        self, client, token_with_invalid_user_id
+    ):
+        # Give
+        data = {"name": "John Doe Gallery"}
+        access_headers = {
+            "Authorization": f"Bearer {token_with_invalid_user_id}"
+        }
+        # Act
+        response = client.get(
+            "/api/v1/galleries",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 401
+
+
+class TestListUserGalleries:
+    def test_success_user_gallery(self, client, user):
+        # Give
+        data = {"name": "John Doe Gallery"}
+        access_headers = {"Authorization": f"Bearer {user['access_token']}"}
+        # Act
+        response = client.get(
             f"/api/v1/users/{user['user']._id}/galleries",
             headers=access_headers,
             json=data,
@@ -53,9 +113,23 @@ class TestListYourGalleries:
         assert response.status_code == 200
         assert len(response.json) == 1
 
-    def test_success_user_without_gallery(
-        self, client, access_token, create_gallery
-    ):
+    def test_success_user_without_gallery(self, client, access_token):
+        # Give
+        data = {"name": "John Doe Gallery"}
+        access_headers = {"Authorization": f"Bearer {access_token}"}
+
+        user_id = decode_token(access_token)["sub"]["id"]
+        # Act
+        response = client.get(
+            f"/api/v1/users/{user_id}/galleries",
+            headers=access_headers,
+            json=data,
+        )
+        # Assert
+        assert response.status_code == 200
+        assert len(response.json) == 0
+
+    def test_fail_user_not_found(self, client, access_token, create_gallery):
         # Give
         data = {"name": "John Doe Gallery"}
         access_headers = {"Authorization": f"Bearer {access_token}"}
@@ -66,22 +140,7 @@ class TestListYourGalleries:
             json=data,
         )
         # Assert
-        assert response.status_code == 200
-        assert len(response.json) == 0
-
-    def test_success_invalid_user(self, client, access_token, create_gallery):
-        # Give
-        data = {"name": "John Doe Gallery"}
-        access_headers = {"Authorization": f"Bearer {access_token}"}
-        # Act
-        response = client.get(
-            "/api/v1/users/abc/galleries",
-            headers=access_headers,
-            json=data,
-        )
-        # Assert
-        assert response.status_code == 200
-        assert len(response.json) == 0
+        assert response.status_code == 404
 
     def test_fail_without_athorization(self, client, create_user):
         # Give
@@ -214,9 +273,7 @@ class TestAddFriendInGallery:
         # Assert
         assert response.status_code == 200
 
-    def test_fail_invalid_email(
-        self, client, access_token, create_user, user
-    ):
+    def test_fail_invalid_email(self, client, access_token, create_user, user):
         # Give
         access_headers = {"Authorization": f"Bearer {access_token}"}
         data = {"email": "isso_nao_eh_um_email"}
@@ -253,9 +310,7 @@ class TestAddFriendInGallery:
         # Assert
         assert response.status_code == 401
 
-    def test_fail_invalid_gallery_id(
-        self, client, create_user, user
-    ):
+    def test_fail_invalid_gallery_id(self, client, create_user, user):
         # Give
         access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         data = {"email": create_user.email}
@@ -268,9 +323,7 @@ class TestAddFriendInGallery:
         # Assert
         assert response.status_code == 404
 
-    def test_fail_gallery_not_found(
-        self, client, create_user, user
-    ):
+    def test_fail_gallery_not_found(self, client, create_user, user):
         # Give
         access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         data = {"email": create_user.email}
@@ -283,9 +336,7 @@ class TestAddFriendInGallery:
         # Assert
         assert response.status_code == 404
 
-    def test_fail_user_frien_not_found(
-        self, client, create_user, user
-    ):
+    def test_fail_user_frien_not_found(self, client, create_user, user):
         # Give
         access_headers = {"Authorization": f"Bearer {user['access_token']}"}
         data = {"email": "user_not_found@email.com"}
