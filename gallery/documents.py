@@ -99,15 +99,6 @@ class GalleryModel(Document):
         except (DoesNotExist, ValidationError):
             return None
 
-    @staticmethod
-    def get_pictures_by_user_and_gallery_id(user_id, gallery_id):
-        gallery = GalleryModel.find_gallery_by_user_and_id(user_id, gallery_id)
-
-        if not gallery:
-            return None
-
-        return gallery.pictures
-
     def get_pictures(self, page=0, limit=5) -> PicturesModel:
         first = page * limit
 
@@ -120,11 +111,8 @@ class GalleryModel(Document):
 
         return paginated_pics
 
-    @staticmethod
-    def get_approved_pictures(gallery_id, page=0, limit=5) -> PicturesModel:
-        paginated_pics = GalleryModel.get_pictures(
-            gallery_id, page, limit=limit
-        ).filter(approved=True)
+    def get_approved_pictures(self, page=0, limit=5) -> PicturesModel:
+        paginated_pics = self.get_pictures(page, limit).filter(approved=True)
 
         return paginated_pics
 

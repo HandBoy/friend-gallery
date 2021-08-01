@@ -429,14 +429,14 @@ class TestListPicturesUserGallery:
         assert response.status_code == 200
         assert len(response.json["result"]) == 2
 
-    def test_success_gallery_belongs_another_user(
-        self, client, access_token, create_gallery
+    def test_success_gallery_belongs_another_user_get_only_approved(
+        self, client, access_token, user
     ):
         # Give
         access_headers = {"Authorization": f"Bearer {access_token}"}
         # Act
         response = client.get(
-            f"/api/v1/gallery/{create_gallery._id}/pictures",
+            f"/api/v1/gallery/{user['gallery']._id}/pictures",
             headers=access_headers,
         )
         # Assert

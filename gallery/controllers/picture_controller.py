@@ -8,14 +8,17 @@ from gallery.exceptions import (
 )
 
 
-def get_paginate_pictures(
-    user_id: str, gallery_id: str, page: int = 0, limit: int = 5
-):
+def get_pictures(user_id: str, gallery_id: str, page: int = 0, limit: int = 5):
     try:
-        if GalleryModel.are_you_owner(gallery_id, user_id):
-            return GalleryModel.get_pictures(gallery_id, page, limit)
+        gallery = GalleryModel.find_gallery_by_id(id=gallery_id)
 
-        return GalleryModel.get_pictures_approved(gallery_id, page, limit)
+        if not gallery:
+            raise GalleryNotFound(message="Gallery Not Found")
+
+        if gallery.are_you_owner(user_id):
+            return gallery.get_pictures(page, limit)
+
+        return gallery.get_approved_pictures(page, limit)
     except DoesNotExist:
         raise GalleryNotFound(message="Gallery Not Found")
 
