@@ -49,6 +49,9 @@ INFO     -  Cleaning site directory
 INFO     -  Documentation built in 0.30 seconds
 INFO     -  [19:46:59] Serving on http://127.0.0.1:8000/
 INFO     -  [19:46:59] Browser connected: http://127.0.0.1:8000/
+
+# Deploy documentation
+$ mkdocs gh-deploy
 ```
 
 ### Testes
@@ -59,6 +62,10 @@ $ pytest
 
 # Run all tests with coverage
 $ pytest --cov=gallery
+
+$ pytest --cov-report term-missing --cov=gallery
+
+$ pytest --cov-report html --cov=gallery
 
 # Run all the tests in a particular test file
 $ pytest tests/fields/test_fields.py
@@ -125,3 +132,39 @@ Below we have a explanation about all project files:
 - [x] Estruturar o Readme.
 - [ ] Add MakeFile.
 - [ ] Improve Coverage.
+
+
+# Links
+- (Code Documentation of the Future — MkDocs-Material Tutorial)[https://ahmed-nafies.medium.com/code-documentation-of-the-future-mkdocs-material-tutorial-35e5176d974f]
+- (Desmistificando JWT e Refresh token)[https://medium.com/qualyteam-engineering/jwt-refresh-token-b79440a239]
+
+
+    @staticmethod
+    def approve_picture(gallery_id, user_id, picture_id, status=True):
+        can_approve = GalleryModel.objects(
+            _id=gallery_id, can_approve__in=[user_id]
+        )
+
+        if not can_approve:
+            return False
+
+        picture = can_approve.get().pictures.filter(id=picture_id)
+        picture.get().approved = status
+        picture.save()
+
+        return True
+    
+
+    @staticmethod
+    def like_picture_by_id(gallery_id, picture_id):
+        try:
+            picture = (
+                GalleryModel.objects(_id=gallery_id)
+                .get()
+                .pictures.filter(id=picture_id)
+            )
+            picture.get().likes += 1
+            picture.save()
+            return True
+        except (DoesNotExist, ValidationError):
+            return False
